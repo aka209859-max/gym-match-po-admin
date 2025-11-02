@@ -26,6 +26,15 @@ export default function MembersPage() {
     setSelectedMember(null);
   };
 
+  const handleMemberUpdated = async () => {
+    // 会員データを再読み込み
+    const session = getPoSession();
+    if (session) {
+      const membersData = await fetchMembers(session.gymId);
+      setMembers(membersData);
+    }
+  };
+
   useEffect(() => {
     // 認証チェック
     if (!isAuthenticated()) {
@@ -319,6 +328,7 @@ export default function MembersPage() {
         member={selectedMember}
         isOpen={isModalOpen}
         onClose={closeModal}
+        onMemberUpdated={handleMemberUpdated}
       />
     </AdminLayout>
   );

@@ -2,21 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import { Member, fetchUserSessions, Session } from '@/lib/firestore';
+import MemberEditModal from './MemberEditModal';
+import MemberDeleteDialog from './MemberDeleteDialog';
 
 interface MemberDetailModalProps {
   member: Member | null;
   isOpen: boolean;
   onClose: () => void;
+  onMemberUpdated: () => void;
 }
 
 export default function MemberDetailModal({
   member,
   isOpen,
   onClose,
+  onMemberUpdated,
 }: MemberDetailModalProps) {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   const [activeTab, setActiveTab] = useState<'info' | 'sessions'>('info');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen && member) {
@@ -386,10 +392,16 @@ export default function MemberDetailModal({
             {/* フッター (アクション) */}
             <div className="bg-gray-50 px-8 py-4 border-t border-gray-200 flex items-center justify-between">
               <div className="flex space-x-3">
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                >
                   編集
                 </button>
-                <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
+                <button
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
+                >
                   削除
                 </button>
               </div>
@@ -403,6 +415,28 @@ export default function MemberDetailModal({
           </div>
         </div>
       </div>
+
+      {/* 編集モーダル */}
+      <MemberEditModal
+        member={member}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={() => {
+          onMemberUpdated();
+          onClose();
+        }}
+      />
+
+      {/* 削除確認ダイアログ */}
+      <MemberDeleteDialog
+        member={member}
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onSuccess={() => {
+          onMemberUpdated();
+          onClose();
+        }}
+      />
     </>
   );
 }
