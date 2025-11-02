@@ -1,83 +1,48 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
-
-interface Member {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  joinDate: string;
-  contractType: 'monthly' | 'session';
-  lastSessionDate: string;
-  totalSessions: number;
-  isActive: boolean;
-}
+import { getPoSession, isAuthenticated } from '@/lib/auth';
+import { fetchMembers, Member } from '@/lib/firestore';
 
 export default function MembersPage() {
+  const router = useRouter();
   const [members, setMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'dormant'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    // TODO: Firebase Firestoreからデータ取得
-    // 仮データ設定
-    setTimeout(() => {
-      setMembers([
-        {
-          id: '1',
-          name: '田中 太郎',
-          email: 'tanaka@example.jp',
-          phone: '090-1234-5678',
-          joinDate: '2024-05-15',
-          contractType: 'monthly',
-          lastSessionDate: '2024-11-01',
-          totalSessions: 45,
-          isActive: true,
-        },
-        {
-          id: '2',
-          name: '佐藤 花子',
-          email: 'sato@example.jp',
-          phone: '090-2345-6789',
-          joinDate: '2024-08-01',
-          contractType: 'monthly',
-          lastSessionDate: '2024-11-02',
-          totalSessions: 28,
-          isActive: true,
-        },
-        {
-          id: '3',
-          name: '鈴木 一郎',
-          email: 'suzuki@example.jp',
-          phone: '090-3456-7890',
-          joinDate: '2023-11-10',
-          contractType: 'monthly',
-          lastSessionDate: '2024-10-10',
-          totalSessions: 120,
-          isActive: false,
-        },
-        {
-          id: '4',
-          name: '高橋 美咲',
-          email: 'takahashi@example.jp',
-          phone: '090-4567-8901',
-          joinDate: '2024-09-05',
-          contractType: 'session',
-          lastSessionDate: '2024-10-30',
-          totalSessions: 15,
-          isActive: true,
-        },
-        {
-          id: '5',
-          name: '渡辺 健太',
-          email: 'watanabe@example.jp',
-          phone: '090-5678-9012',
-          joinDate: '2024-10-01',
-          contractType: 'monthly',
-          lastSessionDate: '2024-11-02',
+    // 認証チェック
+    if (!isAuthenticated()) {
+      console.log('⚠️ 未認証：ログインページへリダイレクト');
+      router.push('/');
+      return;
+    }
+
+    // Firebase Firestoreから会員データ取得
+    const loadMembers = async () => {
+      try {
+        const session = getPoSession();
+        if (!session) {
+          router.push('/');
+          return;
+        }
+
+        console.log('📊 会員データ取得開始:', session.gymId);
+        const membersData = await fetchMembers(session.gymId);
+        setMembers(membersData);
+        console.log('✅ 会員データ取得完了:', membersData.length, '件');
+        setIsLoading(false);
+      } catch (error) {
+        console.error('❌ 会員データ取得エラー:', error);
+        setIsLoading(false);
+      }
+    };
+
+    loadMembers();
+  }, [router]);
           totalSessions: 12,
           isActive: true,
         },
@@ -305,8 +270,12 @@ export default function MembersPage() {
                           {member.contractType === 'monthly' ? '月額会員' : 'セッション会員'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{member.joinDate}</td>
-                      <td className="px-6 py-4 text-sm text-gray-900">{member.lastSessionDate}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {member.joinDate.toLocaleDateString('ja-JP')}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {member.lastVisit.toLocaleDateString('ja-JP')}
+                      </td>
                       <td className="px-6 py-4">
                         <span className="text-sm font-semibold text-gray-900">{member.totalSessions}回</span>
                       </td>

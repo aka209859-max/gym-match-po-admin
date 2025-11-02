@@ -1,55 +1,71 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
+import { getPoSession, isAuthenticated } from '@/lib/auth';
+import { fetchKPIData, fetchRecentMembers, Member } from '@/lib/firestore';
 
 interface KPIData {
   totalMembers: number;
   activeMembers: number;
   dormantMembers: number;
   todaySessions: number;
-  monthlyRevenue: number;
-}
-
-interface RecentMember {
-  id: string;
-  name: string;
-  joinDate: string;
-  status: 'active' | 'dormant';
+  newMembersThisMonth: number;
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [kpiData, setKpiData] = useState<KPIData>({
     totalMembers: 0,
     activeMembers: 0,
     dormantMembers: 0,
     todaySessions: 0,
-    monthlyRevenue: 0,
+    newMembersThisMonth: 0,
   });
-  const [recentMembers, setRecentMembers] = useState<RecentMember[]>([]);
+  const [recentMembers, setRecentMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [gymName, setGymName] = useState('');
 
   useEffect(() => {
-    // TODO: Firebase Firestoreからデータ取得
-    // 仮データ設定
-    setTimeout(() => {
-      setKpiData({
-        totalMembers: 5,
-        activeMembers: 4,
-        dormantMembers: 1,
-        todaySessions: 3,
-        monthlyRevenue: 150000,
-      });
-      setRecentMembers([
-        { id: '1', name: '田中 太郎', joinDate: '2024-05-15', status: 'active' },
-        { id: '2', name: '佐藤 花子', joinDate: '2024-08-01', status: 'active' },
-        { id: '3', name: '鈴木 一郎', joinDate: '2023-11-10', status: 'dormant' },
-        { id: '4', name: '高橋 美咲', joinDate: '2024-09-05', status: 'active' },
-        { id: '5', name: '渡辺 健太', joinDate: '2024-10-01', status: 'active' },
-      ]);
-      setIsLoading(false);
-    }, 800);
-  }, []);
+    // 認証チェック
+    if (!isAuthenticated()) {
+      console.log('⚠️ 未認証：ログインページへリダイレクト');
+      router.push('/');
+      return;
+    }
+
+    // Firebase Firestoreからデータ取得
+    const loadData = async () => {
+      try {
+        const session = getPoSession();
+        if (!session) {
+          router.push('/');
+          return;
+        }
+
+        setGymName(session.gymName);
+        console.log('📊 データ取得開始:', session.gymId);
+
+        // KPIデータ取得
+        const kpi = await fetchKPIData(session.gymId);
+        setKpiData(kpi);
+        console.log('✅ KPIデータ取得完了:', kpi);
+
+        // 最近の会員取得
+        const members = await fetchRecentMembers(session.gymId);
+        setRecentMembers(members);
+        console.log('✅ 会員データ取得完了:', members.length, '件');
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error('❌ データ取得エラー:', error);
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [router]);
 
   if (isLoading) {
     return (
@@ -152,18 +168,18 @@ export default function DashboardPage() {
             <p className="text-xs text-gray-500 mt-2">予定セッション数</p>
           </div>
 
-          {/* 月間売上 */}
+          {/* 今月の新規会員 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
                 <svg className="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
               </div>
             </div>
-            <p className="text-sm font-medium text-gray-600 mb-1">月間売上</p>
-            <p className="text-3xl font-bold text-gray-900">¥{kpiData.monthlyRevenue.toLocaleString()}</p>
-            <p className="text-xs text-gray-500 mt-2">今月の予測売上</p>
+            <p className="text-sm font-medium text-gray-600 mb-1">今月の新規会員</p>
+            <p className="text-3xl font-bold text-gray-900">{kpiData.newMembersThisMonth}</p>
+            <p className="text-xs text-gray-500 mt-2">今月の新規登録数</p>
           </div>
         </div>
 
@@ -178,33 +194,41 @@ export default function DashboardPage() {
               </button>
             </div>
             <div className="space-y-4">
-              {recentMembers.map((member) => (
-                <div
-                  key={member.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-700 font-semibold text-sm">
-                        {member.name.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{member.name}</p>
-                      <p className="text-sm text-gray-500">登録日: {member.joinDate}</p>
-                    </div>
-                  </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      member.status === 'active'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-orange-100 text-orange-700'
-                    }`}
+              {recentMembers.length > 0 ? (
+                recentMembers.map((member) => (
+                  <div
+                    key={member.id}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer"
                   >
-                    {member.status === 'active' ? 'アクティブ' : '休眠'}
-                  </span>
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-blue-700 font-semibold text-sm">
+                          {member.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{member.name}</p>
+                        <p className="text-sm text-gray-500">
+                          登録日: {member.joinDate.toLocaleDateString('ja-JP')}
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        member.isActive
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-orange-100 text-orange-700'
+                      }`}
+                    >
+                      {member.isActive ? 'アクティブ' : '休眠'}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>会員データが見つかりません</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 

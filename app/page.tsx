@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { validateAccessCode, storePoSession } from '@/lib/auth';
 
 export default function POLoginPage() {
   const [accessCode, setAccessCode] = useState('');
@@ -13,17 +14,33 @@ export default function POLoginPage() {
     setError(null);
 
     try {
-      // TODO: Firebase認証実装
-      console.log('🔑 アクセスコード認証:', accessCode);
+      console.log('🔑 Firebase認証開始:', accessCode);
       
-      // 仮実装: RF-AKA-2024チェック
-      if (accessCode.toUpperCase() === 'RF-AKA-2024') {
+      // Firebase Firestore でアクセスコード検証
+      const result = await validateAccessCode(accessCode);
+      
+      if (result.isValid && result.poOwnerId && result.gymId && result.gymName) {
+        // セッション情報を保存
+        storePoSession(
+          result.poOwnerId,
+          result.gymId,
+          result.gymName,
+          accessCode.trim().toUpperCase()
+        );
+        
+        console.log('✅ 認証成功:', {
+          poOwnerId: result.poOwnerId,
+          gymId: result.gymId,
+          gymName: result.gymName,
+        });
+        
         // ダッシュボードへリダイレクト
         window.location.href = '/dashboard';
       } else {
-        throw new Error('無効なアクセスコードです');
+        throw new Error(result.errorMessage || '無効なアクセスコードです');
       }
     } catch (err: any) {
+      console.error('❌ 認証エラー:', err);
       setError(err.message || 'ログインに失敗しました');
       setIsLoading(false);
     }
