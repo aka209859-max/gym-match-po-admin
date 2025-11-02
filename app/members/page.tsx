@@ -56,13 +56,6 @@ export default function MembersPage() {
 
     loadMembers();
   }, [router]);
-          totalSessions: 12,
-          isActive: true,
-        },
-      ]);
-      setIsLoading(false);
-    }, 500);
-  }, []);
 
   const filteredMembers = members.filter((member) => {
     // ステータスフィルター
