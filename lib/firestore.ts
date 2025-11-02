@@ -203,11 +203,10 @@ export async function fetchSessions(
 ): Promise<Session[]> {
   try {
     const sessionsRef = collection(db, COLLECTIONS.SESSIONS);
+    // ✅ Simple query without orderBy (avoid composite index requirement)
     const sessionsQuery = query(
       sessionsRef,
-      where('gymId', '==', gymId),
-      orderBy('date', 'desc'),
-      limit(limitCount)
+      where('gymId', '==', gymId)
     );
     const sessionsSnapshot = await getDocs(sessionsQuery);
 
@@ -225,7 +224,11 @@ export async function fetchSessions(
       });
     });
 
-    return sessions;
+    // ✅ Sort in memory (newest first) - no index needed
+    sessions.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+    // ✅ Apply limit after sorting
+    return sessions.slice(0, limitCount);
   } catch (error) {
     console.error('Error fetching sessions:', error);
     return [];
@@ -244,11 +247,10 @@ export async function fetchUserSessions(
 ): Promise<Session[]> {
   try {
     const sessionsRef = collection(db, COLLECTIONS.SESSIONS);
+    // ✅ Simple query without orderBy (avoid composite index requirement)
     const sessionsQuery = query(
       sessionsRef,
-      where('userId', '==', userId),
-      orderBy('date', 'desc'),
-      limit(limitCount)
+      where('userId', '==', userId)
     );
     const sessionsSnapshot = await getDocs(sessionsQuery);
 
@@ -266,7 +268,11 @@ export async function fetchUserSessions(
       });
     });
 
-    return sessions;
+    // ✅ Sort in memory (newest first) - no index needed
+    sessions.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+    // ✅ Apply limit after sorting
+    return sessions.slice(0, limitCount);
   } catch (error) {
     console.error('Error fetching user sessions:', error);
     return [];

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPoSession } from '@/lib/auth';
-import Sidebar from '@/components/Sidebar';
+import AdminLayout from '@/components/AdminLayout';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -257,31 +257,21 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
-        <Sidebar />
-        <main className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-          </div>
-        </main>
-      </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </AdminLayout>
     );
   }
 
   if (!analyticsData) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
-        <Sidebar />
-        <main className="flex-1 p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-              <p className="text-red-800 font-medium">分析データの取得に失敗しました</p>
-            </div>
-          </div>
-        </main>
-      </div>
+      <AdminLayout>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <p className="text-red-800 font-medium">分析データの取得に失敗しました</p>
+        </div>
+      </AdminLayout>
     );
   }
 
@@ -348,10 +338,8 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
-      <main className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto">
+    <AdminLayout>
+      <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -579,7 +567,6 @@ export default function AnalyticsPage() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </AdminLayout>
   );
 }
