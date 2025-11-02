@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
+import MemberDetailModal from '@/components/MemberDetailModal';
 import { getPoSession, isAuthenticated } from '@/lib/auth';
 import { fetchMembers, Member } from '@/lib/firestore';
 
@@ -12,6 +13,18 @@ export default function MembersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'dormant'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleMemberClick = (member: Member) => {
+    setSelectedMember(member);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedMember(null);
+  };
 
   useEffect(() => {
     // 認証チェック
@@ -241,7 +254,11 @@ export default function MembersPage() {
                   </tr>
                 ) : (
                   filteredMembers.map((member) => (
-                    <tr key={member.id} className="hover:bg-gray-50 transition cursor-pointer">
+                    <tr
+                      key={member.id}
+                      className="hover:bg-gray-50 transition cursor-pointer"
+                      onClick={() => handleMemberClick(member)}
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -303,6 +320,13 @@ export default function MembersPage() {
           </div>
         </div>
       </div>
+
+      {/* 会員詳細モーダル */}
+      <MemberDetailModal
+        member={selectedMember}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
     </AdminLayout>
   );
 }
