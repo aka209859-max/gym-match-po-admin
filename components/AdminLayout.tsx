@@ -70,11 +70,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   ];
 
   const handleLogout = () => {
-    // localStorageから認証情報を削除
+    // Context API経由でログアウト処理は行わない
+    // （AdminLayoutはクライアントコンポーネントだがAuthContextを直接使用しない設計）
+    
+    // 直接localStorageをクリア
     localStorage.removeItem('gym_match_authenticated');
     localStorage.removeItem('gym_match_access_code');
     
-    // ログインページにリダイレクト
+    // ログインページにリダイレクト（完全リロード）
     window.location.href = '/';
   };
 

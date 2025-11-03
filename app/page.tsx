@@ -2,15 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  // アクセスコード（本番環境では環境変数に移動）
-  const VALID_ACCESS_CODE = 'GYMMATCH2024';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,13 +19,13 @@ export default function LoginPage() {
     // 簡易的な遅延（実際の認証処理をシミュレート）
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    if (accessCode === VALID_ACCESS_CODE) {
-      // アクセスコードをlocalStorageに保存
-      localStorage.setItem('gym_match_access_code', accessCode);
-      localStorage.setItem('gym_match_authenticated', 'true');
-      
-      // ダッシュボードにリダイレクト
-      router.push('/dashboard');
+    // Context API経由でログイン
+    const success = login(accessCode);
+
+    if (success) {
+      console.log('✅ Login Success - Redirecting to /members');
+      // 会員管理ページにリダイレクト
+      router.replace('/members');
     } else {
       setError('アクセスコードが正しくありません。もう一度お試しください。');
       setIsLoading(false);
