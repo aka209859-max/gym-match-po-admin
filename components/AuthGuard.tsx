@@ -21,18 +21,27 @@ export default function AuthGuard({ children }: AuthGuardProps) {
       return;
     }
 
+    // クライアントサイドでのみ実行
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     // 認証状態をチェック
     const authenticated = localStorage.getItem('gym_match_authenticated');
     const accessCode = localStorage.getItem('gym_match_access_code');
 
+    console.log('🔐 Auth Check:', { pathname, authenticated, accessCode });
+
     if (authenticated === 'true' && accessCode) {
+      console.log('✅ Authenticated - showing content');
       setIsAuthenticated(true);
       setIsLoading(false);
     } else {
-      // 認証されていない場合、ログインページにリダイレクト
+      console.log('❌ Not authenticated - redirecting to login');
+      setIsLoading(false);
       router.push('/');
     }
-  }, [pathname, router]);
+  }, [pathname]); // router を依存配列から削除
 
   // ローディング中
   if (isLoading) {
