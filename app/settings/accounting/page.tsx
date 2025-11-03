@@ -393,6 +393,22 @@ export default function AccountingSettingsPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Journal Test Button */}
+              <div className="mt-4">
+                <button
+                  onClick={() => window.location.href = '/settings/accounting/journal-test'}
+                  className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                  自動仕訳テストを実行
+                </button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  完了済みセッションをfreeeに仕訳登録できます
+                </p>
+              </div>
             </div>
           </div>
         )}
