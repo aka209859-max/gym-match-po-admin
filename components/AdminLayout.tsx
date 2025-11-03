@@ -70,7 +70,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   ];
 
   const handleLogout = () => {
-    // TODO: Firebase認証ログアウト
+    // localStorageから認証情報を削除
+    localStorage.removeItem('gym_match_authenticated');
+    localStorage.removeItem('gym_match_access_code');
+    
+    // ログインページにリダイレクト
     window.location.href = '/';
   };
 
