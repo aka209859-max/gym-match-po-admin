@@ -1,335 +1,537 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo } from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import MemberDetailModal from '@/components/MemberDetailModal';
-import { getPoSession, isAuthenticated } from '@/lib/auth';
-import { fetchMembers, Member } from '@/lib/firestore';
+import {
+  Member,
+  MemberStatus,
+  ContractType,
+  MemberFilter,
+  MEMBER_STATUS_LABELS,
+  CONTRACT_TYPE_LABELS,
+  MEMBER_STATUS_COLORS,
+  CONTRACT_TYPE_COLORS,
+  formatMemberDate,
+  isExpiringSoon,
+  getMemberActivityStatus,
+  membershipDurationMonths,
+} from '@/types/member';
 
 export default function MembersPage() {
-  const router = useRouter();
-  const [members, setMembers] = useState<Member[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'dormant'>('all');
+  const [members, setMembers] = useState<Member[]>(getDemoMembers());
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<MemberStatus | 'all'>('all');
+  const [selectedContractType, setSelectedContractType] = useState<ContractType | 'all'>('all');
 
-  const handleMemberClick = (member: Member) => {
-    setSelectedMember(member);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedMember(null);
-  };
-
-  const handleMemberUpdated = async () => {
-    // 会員データを再読み込み
-    const session = getPoSession();
-    if (session) {
-      const membersData = await fetchMembers(session.gymId);
-      setMembers(membersData);
-    }
-  };
-
-  useEffect(() => {
-    // 認証チェック
-    if (!isAuthenticated()) {
-      console.log('⚠️ 未認証：ログインページへリダイレクト');
-      router.push('/');
-      return;
-    }
-
-    // Firebase Firestoreから会員データ取得
-    const loadMembers = async () => {
-      try {
-        const session = getPoSession();
-        if (!session) {
-          router.push('/');
-          return;
-        }
-
-        console.log('📊 会員データ取得開始:', session.gymId);
-        const membersData = await fetchMembers(session.gymId);
-        setMembers(membersData);
-        console.log('✅ 会員データ取得完了:', membersData.length, '件');
-        setIsLoading(false);
-      } catch (error) {
-        console.error('❌ 会員データ取得エラー:', error);
-        setIsLoading(false);
+  // Filter members based on criteria
+  const filteredMembers = useMemo(() => {
+    return members.filter((member) => {
+      // Status filter
+      if (selectedStatus !== 'all' && member.status !== selectedStatus) {
+        return false;
       }
+
+      // Contract type filter
+      if (selectedContractType !== 'all' && member.contractType !== selectedContractType) {
+        return false;
+      }
+
+      // Search query filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        return (
+          member.name.toLowerCase().includes(query) ||
+          member.email.toLowerCase().includes(query) ||
+          member.phone.includes(query)
+        );
+      }
+
+      return true;
+    });
+  }, [members, selectedStatus, selectedContractType, searchQuery]);
+
+  // Calculate statistics
+  const stats = useMemo(() => {
+    return {
+      total: members.length,
+      active: members.filter((m) => m.status === 'active').length,
+      inactive: members.filter((m) => m.status === 'inactive').length,
+      trial: members.filter((m) => m.status === 'trial').length,
+      expiringSoon: members.filter((m) => m.expiryDate && isExpiringSoon(m.expiryDate)).length,
     };
-
-    loadMembers();
-  }, [router]);
-
-  const filteredMembers = members.filter((member) => {
-    // ステータスフィルター
-    if (filterStatus === 'active' && !member.isActive) return false;
-    if (filterStatus === 'dormant' && member.isActive) return false;
-
-    // 検索クエリ
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        member.name.toLowerCase().includes(query) ||
-        member.email.toLowerCase().includes(query) ||
-        member.phone.includes(query)
-      );
-    }
-
-    return true;
-  });
-
-  if (isLoading) {
-    return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <svg
-              className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            <p className="text-gray-600 text-lg">読み込み中...</p>
-          </div>
-        </div>
-      </AdminLayout>
-    );
-  }
+  }, [members]);
 
   return (
     <AdminLayout>
-      <div className="p-8">
-        {/* ページヘッダー */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">会員管理</h1>
-            <p className="text-gray-600 mt-2">
-              全{members.length}人の会員 | アクティブ: {members.filter((m) => m.isActive).length}人 |
-              休眠: {members.filter((m) => !m.isActive).length}人
-            </p>
-          </div>
-          <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center space-x-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span>新規会員登録</span>
-          </button>
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">会員管理</h1>
+          <p className="text-gray-600 mt-2">
+            会員情報の閲覧・管理を行います
+          </p>
         </div>
 
-        {/* フィルター＆検索バー */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex items-center space-x-4">
-            {/* ステータスフィルター */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setFilterStatus('all')}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
-                  filterStatus === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                すべて
-              </button>
-              <button
-                onClick={() => setFilterStatus('active')}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
-                  filterStatus === 'active'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                アクティブ
-              </button>
-              <button
-                onClick={() => setFilterStatus('dormant')}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
-                  filterStatus === 'dormant'
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                休眠
-              </button>
-            </div>
-
-            {/* 検索バー */}
-            <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="名前、メールアドレス、電話番号で検索..."
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <svg
-                  className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">全会員</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
               </div>
+              <div className="text-4xl">👥</div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">有効会員</p>
+                <p className="text-3xl font-bold text-green-600 mt-1">{stats.active}</p>
+              </div>
+              <div className="text-4xl">✅</div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">休会中</p>
+                <p className="text-3xl font-bold text-yellow-600 mt-1">{stats.inactive}</p>
+              </div>
+              <div className="text-4xl">⏸️</div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">体験会員</p>
+                <p className="text-3xl font-bold text-blue-600 mt-1">{stats.trial}</p>
+              </div>
+              <div className="text-4xl">🆕</div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">期限間近</p>
+                <p className="text-3xl font-bold text-orange-600 mt-1">{stats.expiringSoon}</p>
+              </div>
+              <div className="text-4xl">⚠️</div>
             </div>
           </div>
         </div>
 
-        {/* DataTable */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    会員名
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    連絡先
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    契約タイプ
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    登録日
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    最終利用日
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    セッション数
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    ステータス
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    操作
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {filteredMembers.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center">
-                      <svg
-                        className="w-16 h-16 text-gray-300 mx-auto mb-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                        />
-                      </svg>
-                      <p className="text-gray-500 text-lg font-medium">該当する会員が見つかりません</p>
-                      <p className="text-gray-400 text-sm mt-2">検索条件を変更してください</p>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredMembers.map((member) => (
-                    <tr
-                      key={member.id}
-                      className="hover:bg-gray-50 transition cursor-pointer"
-                      onClick={() => handleMemberClick(member)}
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-blue-700 font-semibold text-sm">
-                              {member.name.charAt(0)}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">{member.name}</p>
-                            <p className="text-sm text-gray-500">{member.id}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="text-sm text-gray-900">{member.email}</p>
-                        <p className="text-sm text-gray-500">{member.phone}</p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            member.contractType === 'monthly'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-purple-100 text-purple-700'
-                          }`}
-                        >
-                          {member.contractType === 'monthly' ? '月額会員' : 'セッション会員'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {member.joinDate.toLocaleDateString('ja-JP')}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {member.lastVisit.toLocaleDateString('ja-JP')}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-semibold text-gray-900">{member.totalSessions}回</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            member.isActive
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-orange-100 text-orange-700'
-                          }`}
-                        >
-                          {member.isActive ? 'アクティブ' : '休眠'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button className="text-blue-600 hover:text-blue-700 font-medium text-sm">
-                          詳細 →
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                検索
+              </label>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="会員名、メール、電話番号で検索"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                ステータス
+              </label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value as MemberStatus | 'all')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">すべて</option>
+                {Object.entries(MEMBER_STATUS_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Contract Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                契約プラン
+              </label>
+              <select
+                value={selectedContractType}
+                onChange={(e) => setSelectedContractType(e.target.value as ContractType | 'all')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">すべて</option>
+                {Object.entries(CONTRACT_TYPE_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
+          {/* Active Filters Display */}
+          {(selectedStatus !== 'all' || selectedContractType !== 'all' || searchQuery) && (
+            <div className="mt-4 flex items-center gap-2">
+              <span className="text-sm text-gray-600">フィルター適用中:</span>
+              {selectedStatus !== 'all' && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                  {MEMBER_STATUS_LABELS[selectedStatus]}
+                  <button
+                    onClick={() => setSelectedStatus('all')}
+                    className="hover:text-blue-900"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {selectedContractType !== 'all' && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                  {CONTRACT_TYPE_LABELS[selectedContractType]}
+                  <button
+                    onClick={() => setSelectedContractType('all')}
+                    className="hover:text-purple-900"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {searchQuery && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+                  検索: {searchQuery}
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="hover:text-gray-900"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSelectedStatus('all');
+                  setSelectedContractType('all');
+                  setSearchQuery('');
+                }}
+                className="ml-auto text-sm text-blue-600 hover:text-blue-700"
+              >
+                すべてクリア
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Members List */}
+        <div className="bg-white rounded-lg shadow-sm">
+          {filteredMembers.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="text-6xl mb-4">👥</div>
+              <p className="text-gray-600 text-lg">会員が見つかりません</p>
+              <p className="text-gray-500 text-sm mt-2">
+                フィルター条件を変更してください
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {filteredMembers.map((member) => (
+                <MemberRow key={member.id} member={member} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
-
-      {/* 会員詳細モーダル */}
-      <MemberDetailModal
-        member={selectedMember}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onMemberUpdated={handleMemberUpdated}
-      />
     </AdminLayout>
   );
+}
+
+// Member Row Component
+function MemberRow({ member }: { member: Member }) {
+  const statusColor = MEMBER_STATUS_COLORS[member.status];
+  const contractTypeColor = CONTRACT_TYPE_COLORS[member.contractType];
+  const activityStatus = getMemberActivityStatus(member.lastVisit);
+  const membershipMonths = membershipDurationMonths(member.joinDate);
+
+  return (
+    <div className="p-6 hover:bg-gray-50 transition-colors">
+      <div className="flex items-start justify-between">
+        {/* Left: Member Info */}
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${statusColor.bg} ${statusColor.text} ${statusColor.border} border`}
+            >
+              {MEMBER_STATUS_LABELS[member.status]}
+            </span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${contractTypeColor.bg} ${contractTypeColor.text}`}>
+              {CONTRACT_TYPE_LABELS[member.contractType]}
+            </span>
+            {member.expiryDate && isExpiringSoon(member.expiryDate) && (
+              <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium">
+                期限間近
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                {member.name}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {member.email}
+              </p>
+              <p className="text-gray-600 text-sm">
+                {member.phone}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-900 font-medium mb-1">
+                入会日: {formatMemberDate(member.joinDate)}
+              </p>
+              <p className="text-gray-600 text-sm">
+                在籍期間: {membershipMonths}ヶ月
+              </p>
+              {member.expiryDate && (
+                <p className="text-gray-600 text-sm">
+                  有効期限: {formatMemberDate(member.expiryDate)}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-gray-900 font-medium mb-1">
+                利用状況
+              </p>
+              <p className={`text-sm ${activityStatus.color}`}>
+                {activityStatus.text}
+              </p>
+              <p className="text-gray-600 text-sm">
+                総セッション数: {member.totalSessions}回
+              </p>
+              <p className="text-gray-600 text-sm">
+                累計売上: ¥{member.totalRevenue.toLocaleString()}
+              </p>
+            </div>
+          </div>
+
+          {member.notes && (
+            <p className="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+              メモ: {member.notes}
+            </p>
+          )}
+        </div>
+
+        {/* Right: Actions */}
+        <div className="ml-4 flex flex-col gap-2">
+          <button className="px-4 py-2 text-sm text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+            詳細
+          </button>
+          <button className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            編集
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Demo Data Generator
+function getDemoMembers(): Member[] {
+  const today = new Date();
+  const oneMonthAgo = new Date(today);
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  const threeMonthsAgo = new Date(today);
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  const sixMonthsAgo = new Date(today);
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  const oneYearAgo = new Date(today);
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+  const oneWeekFromNow = new Date(today);
+  oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+  const oneMonthFromNow = new Date(today);
+  oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
+  const threeMonthsFromNow = new Date(today);
+  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+
+  return [
+    {
+      id: 'member_001',
+      name: '山田太郎',
+      nameKana: 'ヤマダタロウ',
+      email: 'yamada@example.com',
+      phone: '090-1234-5678',
+      contractType: 'premium',
+      status: 'active',
+      joinDate: oneYearAgo,
+      expiryDate: threeMonthsFromNow,
+      lastVisit: today,
+      totalSessions: 48,
+      totalRevenue: 384000,
+      notes: '筋力トレーニング重点。プロテイン購入希望あり。',
+      createdAt: oneYearAgo,
+      updatedAt: today,
+    },
+    {
+      id: 'member_002',
+      name: '鈴木花子',
+      nameKana: 'スズキハナコ',
+      email: 'suzuki@example.com',
+      phone: '080-2345-6789',
+      contractType: 'standard',
+      status: 'active',
+      joinDate: sixMonthsAgo,
+      expiryDate: oneWeekFromNow,
+      lastVisit: threeMonthsAgo,
+      totalSessions: 24,
+      totalRevenue: 144000,
+      notes: '有酸素運動メイン。更新案内送付済み。',
+      createdAt: sixMonthsAgo,
+      updatedAt: today,
+    },
+    {
+      id: 'member_003',
+      name: '高橋健一',
+      nameKana: 'タカハシケンイチ',
+      email: 'takahashi@example.com',
+      phone: '090-3456-7890',
+      contractType: 'basic',
+      status: 'active',
+      joinDate: threeMonthsAgo,
+      expiryDate: oneMonthFromNow,
+      lastVisit: oneMonthAgo,
+      totalSessions: 12,
+      totalRevenue: 60000,
+      createdAt: threeMonthsAgo,
+      updatedAt: today,
+    },
+    {
+      id: 'member_004',
+      name: '伊藤美咲',
+      nameKana: 'イトウミサキ',
+      email: 'ito@example.com',
+      phone: '080-4567-8901',
+      contractType: 'trial',
+      status: 'trial',
+      joinDate: oneMonthAgo,
+      lastVisit: oneMonthAgo,
+      totalSessions: 2,
+      totalRevenue: 6000,
+      notes: '体験トレーニング実施済み。入会検討中。',
+      createdAt: oneMonthAgo,
+      updatedAt: today,
+    },
+    {
+      id: 'member_005',
+      name: '渡辺翔太',
+      nameKana: 'ワタナベショウタ',
+      email: 'watanabe@example.com',
+      phone: '090-5678-9012',
+      contractType: 'premium',
+      status: 'inactive',
+      joinDate: oneYearAgo,
+      expiryDate: threeMonthsFromNow,
+      lastVisit: sixMonthsAgo,
+      totalSessions: 30,
+      totalRevenue: 240000,
+      notes: '休会申請済み（仕事都合）。3ヶ月後復帰予定。',
+      createdAt: oneYearAgo,
+      updatedAt: sixMonthsAgo,
+    },
+    {
+      id: 'member_006',
+      name: '中村さくら',
+      nameKana: 'ナカムラサクラ',
+      email: 'nakamura@example.com',
+      phone: '080-6789-0123',
+      contractType: 'standard',
+      status: 'active',
+      joinDate: oneYearAgo,
+      expiryDate: threeMonthsFromNow,
+      lastVisit: today,
+      totalSessions: 52,
+      totalRevenue: 312000,
+      notes: 'ヨガクラス参加希望。次回更新時にプレミアムへ変更検討。',
+      createdAt: oneYearAgo,
+      updatedAt: today,
+    },
+    {
+      id: 'member_007',
+      name: '小林大輔',
+      nameKana: 'コバヤシダイスケ',
+      email: 'kobayashi@example.com',
+      phone: '090-7890-1234',
+      contractType: 'basic',
+      status: 'active',
+      joinDate: threeMonthsAgo,
+      expiryDate: oneMonthFromNow,
+      lastVisit: oneMonthAgo,
+      totalSessions: 10,
+      totalRevenue: 50000,
+      createdAt: threeMonthsAgo,
+      updatedAt: today,
+    },
+    {
+      id: 'member_008',
+      name: '加藤麻衣',
+      nameKana: 'カトウマイ',
+      email: 'kato@example.com',
+      phone: '080-8901-2345',
+      contractType: 'premium',
+      status: 'expired',
+      joinDate: oneYearAgo,
+      expiryDate: oneMonthAgo,
+      lastVisit: threeMonthsAgo,
+      totalSessions: 36,
+      totalRevenue: 288000,
+      notes: '期限切れ。更新案内未返答。再入会キャンペーン案内予定。',
+      createdAt: oneYearAgo,
+      updatedAt: oneMonthAgo,
+    },
+    {
+      id: 'member_009',
+      name: '佐々木優',
+      nameKana: 'ササキユウ',
+      email: 'sasaki@example.com',
+      phone: '090-9012-3456',
+      contractType: 'standard',
+      status: 'active',
+      joinDate: sixMonthsAgo,
+      expiryDate: threeMonthsFromNow,
+      lastVisit: today,
+      totalSessions: 28,
+      totalRevenue: 168000,
+      createdAt: sixMonthsAgo,
+      updatedAt: today,
+    },
+    {
+      id: 'member_010',
+      name: '田中誠',
+      nameKana: 'タナカマコト',
+      email: 'tanaka@example.com',
+      phone: '080-0123-4567',
+      contractType: 'basic',
+      status: 'active',
+      joinDate: oneMonthAgo,
+      expiryDate: oneMonthFromNow,
+      lastVisit: oneMonthAgo,
+      totalSessions: 4,
+      totalRevenue: 20000,
+      notes: '新規入会。トレーニングメニュー作成済み。',
+      createdAt: oneMonthAgo,
+      updatedAt: today,
+    },
+  ];
 }
