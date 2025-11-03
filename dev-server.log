@@ -1,0 +1,29 @@
+
+> gym-match-po-admin@1.0.0 dev
+> next dev -p 3000 -p 3001
+
+   [1m[38;2;173;127;168m▲ Next.js 15.1.6[39m[22m
+   - Local:        http://localhost:3001
+   - Network:      http://169.254.0.21:3001
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1739ms
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 4s (744 modules)
+ GET / [32m200[39m in 5196ms
+ [32m[1m✓[22m[39m Compiled in 202ms (311 modules)
+ [37m[1m○[22m[39m Compiling /dashboard ...
+ [32m[1m✓[22m[39m Compiled /dashboard in 1210ms (762 modules)
+ GET /dashboard [32m200[39m in 1618ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ [37m[1m○[22m[39m Compiling /settings/accounting ...
+ [32m[1m✓[22m[39m Compiled /settings/accounting in 550ms (771 modules)
+ GET /settings/accounting [32m200[39m in 640ms
+ [32m[1m✓[22m[39m Compiled /export in 444ms (786 modules)
+ GET /export [32m200[39m in 547ms
+ [32m[1m✓[22m[39m Compiled /analytics in 471ms (801 modules)
+ GET /analytics [32m200[39m in 525ms
+ [37m[1m○[22m[39m Compiling /sessions ...
+ [32m[1m✓[22m[39m Compiled /sessions in 571ms (871 modules)
+ GET /sessions [32m200[39m in 621ms
+ [32m[1m✓[22m[39m Compiled in 1957ms (815 modules)

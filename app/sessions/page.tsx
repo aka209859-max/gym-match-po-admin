@@ -1,446 +1,477 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useMemo } from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import { getPoSession, isAuthenticated } from '@/lib/auth';
-import { fetchSessions, fetchMembers, Session, Member } from '@/lib/firestore';
-import { db } from '@/lib/firebase';
-import { collection, addDoc, updateDoc, doc, Timestamp } from 'firebase/firestore';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-
-type CalendarValue = Date | null | [Date | null, Date | null];
+import {
+  Session,
+  SessionStatus,
+  SessionType,
+  SessionFilter,
+  SESSION_STATUS_LABELS,
+  SESSION_TYPE_LABELS,
+  SESSION_STATUS_COLORS,
+  formatSessionDate,
+  formatSessionTime,
+  isToday,
+  isUpcoming,
+} from '@/types/session';
 
 export default function SessionsPage() {
-  const router = useRouter();
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [members, setMembers] = useState<Member[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [gymId, setGymId] = useState('');
+  const [sessions, setSessions] = useState<Session[]>(getDemoSessions());
+  const [filter, setFilter] = useState<SessionFilter>({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<SessionStatus | 'all'>('all');
+  const [selectedType, setSelectedType] = useState<SessionType | 'all'>('all');
 
-  // 予約フォームデータ
-  const [bookingForm, setBookingForm] = useState({
-    userId: '',
-    duration: '60',
-    type: 'パーソナル',
-  });
-
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      router.push('/');
-      return;
-    }
-
-    loadData();
-  }, [router]);
-
-  const loadData = async () => {
-    try {
-      const session = getPoSession();
-      if (!session) {
-        router.push('/');
-        return;
+  // Filter sessions based on criteria
+  const filteredSessions = useMemo(() => {
+    return sessions.filter((session) => {
+      // Status filter
+      if (selectedStatus !== 'all' && session.status !== selectedStatus) {
+        return false;
       }
 
-      setGymId(session.gymId);
+      // Type filter
+      if (selectedType !== 'all' && session.type !== selectedType) {
+        return false;
+      }
 
-      // セッションと会員データを並行取得
-      const [sessionsData, membersData] = await Promise.all([
-        fetchSessions(session.gymId, 100),
-        fetchMembers(session.gymId),
-      ]);
+      // Search query filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        return (
+          session.memberName.toLowerCase().includes(query) ||
+          session.trainerName.toLowerCase().includes(query) ||
+          session.location.toLowerCase().includes(query)
+        );
+      }
 
-      setSessions(sessionsData);
-      setMembers(membersData);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('❌ データ取得エラー:', error);
-      setIsLoading(false);
-    }
-  };
-
-  // 選択された日のセッションを取得
-  const getSessionsForDate = (date: Date) => {
-    return sessions.filter((session) => {
-      const sessionDate = session.date;
-      return (
-        sessionDate.getFullYear() === date.getFullYear() &&
-        sessionDate.getMonth() === date.getMonth() &&
-        sessionDate.getDate() === date.getDate()
-      );
+      return true;
     });
-  };
+  }, [sessions, selectedStatus, selectedType, searchQuery]);
 
-  const selectedDateSessions = getSessionsForDate(selectedDate);
-
-  // セッション予約処理
-  const handleBookSession = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      const selectedMember = members.find((m) => m.id === bookingForm.userId);
-      if (!selectedMember) return;
-
-      // Firestoreにセッション作成
-      await addDoc(collection(db, 'sessions'), {
-        userId: bookingForm.userId,
-        userName: selectedMember.name,
-        gymId: gymId,
-        date: Timestamp.fromDate(selectedDate),
-        duration: parseInt(bookingForm.duration),
-        type: bookingForm.type,
-        status: 'upcoming',
-      });
-
-      console.log('✅ セッション予約成功');
-      setIsBookingModalOpen(false);
-      setBookingForm({ userId: '', duration: '60', type: 'パーソナル' });
-      
-      // データ再読み込み
-      await loadData();
-    } catch (error) {
-      console.error('❌ セッション予約エラー:', error);
-    }
-  };
-
-  // セッションキャンセル処理
-  const handleCancelSession = async (sessionId: string) => {
-    if (!confirm('このセッションをキャンセルしますか？')) return;
-
-    try {
-      const sessionRef = doc(db, 'sessions', sessionId);
-      await updateDoc(sessionRef, {
-        status: 'cancelled',
-      });
-
-      console.log('✅ セッションキャンセル成功');
-      await loadData();
-    } catch (error) {
-      console.error('❌ セッションキャンセルエラー:', error);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <svg
-              className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            <p className="text-gray-600 text-lg">読み込み中...</p>
-          </div>
-        </div>
-      </AdminLayout>
-    );
-  }
+  // Calculate statistics
+  const stats = useMemo(() => {
+    return {
+      total: filteredSessions.length,
+      today: filteredSessions.filter((s) => isToday(s.scheduledDate)).length,
+      upcoming: filteredSessions.filter((s) => isUpcoming(s.scheduledDate) && s.status !== 'cancelled').length,
+      completed: filteredSessions.filter((s) => s.status === 'completed').length,
+    };
+  }, [filteredSessions]);
 
   return (
     <AdminLayout>
-      <div className="p-8">
-        {/* ページヘッダー */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">セッション管理</h1>
-            <p className="text-gray-600 mt-2">
-              予約済みセッション: {sessions.filter((s) => s.status === 'upcoming').length}件
-            </p>
-          </div>
-          <button
-            onClick={() => setIsBookingModalOpen(true)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold flex items-center space-x-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span>セッション予約</span>
-          </button>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">セッション管理</h1>
+          <p className="text-gray-600 mt-2">
+            トレーニングセッションの予約・管理を行います
+          </p>
         </div>
 
-        {/* 2カラムレイアウト */}
-        <div className="grid grid-cols-2 gap-6">
-          {/* カレンダー */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">カレンダー</h2>
-            <Calendar
-              onChange={(value) => {
-                if (value instanceof Date) {
-                  setSelectedDate(value);
-                }
-              }}
-              value={selectedDate}
-              locale="ja-JP"
-              className="w-full border-0"
-              tileClassName={({ date }) => {
-                const sessionsForDate = getSessionsForDate(date);
-                if (sessionsForDate.length > 0) {
-                  return 'bg-blue-100 hover:bg-blue-200';
-                }
-                return '';
-              }}
-            />
-          </div>
-
-          {/* 選択日のセッション一覧 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              {selectedDate.toLocaleDateString('ja-JP', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'short',
-              })}
-              のセッション
-            </h2>
-
-            {selectedDateSessions.length > 0 ? (
-              <div className="space-y-4">
-                {selectedDateSessions.map((session) => (
-                  <div
-                    key={session.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900">{session.userName}</h3>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          session.status === 'completed'
-                            ? 'bg-green-100 text-green-700'
-                            : session.status === 'cancelled'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-blue-100 text-blue-700'
-                        }`}
-                      >
-                        {session.status === 'completed'
-                          ? '完了'
-                          : session.status === 'cancelled'
-                          ? 'キャンセル'
-                          : '予定'}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                      <span>🏋️ {session.type}</span>
-                      <span>⏱️ {session.duration}分</span>
-                    </div>
-                    {session.status === 'upcoming' && (
-                      <button
-                        onClick={() => handleCancelSession(session.id)}
-                        className="mt-3 text-sm text-red-600 hover:text-red-700 font-medium"
-                      >
-                        キャンセル
-                      </button>
-                    )}
-                  </div>
-                ))}
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">全セッション</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
               </div>
-            ) : (
-              <div className="text-center py-12 text-gray-500">
-                <svg
-                  className="w-16 h-16 text-gray-400 mx-auto mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <p>この日のセッションはありません</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 全セッション履歴 */}
-        <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">最近のセッション</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    会員名
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    日時
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    タイプ
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    所要時間
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    ステータス
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {sessions.slice(0, 10).map((session) => (
-                  <tr key={session.id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {session.userName}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {session.date.toLocaleDateString('ja-JP', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{session.type}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{session.duration}分</td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          session.status === 'completed'
-                            ? 'bg-green-100 text-green-700'
-                            : session.status === 'cancelled'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-blue-100 text-blue-700'
-                        }`}
-                      >
-                        {session.status === 'completed'
-                          ? '完了'
-                          : session.status === 'cancelled'
-                          ? 'キャンセル'
-                          : '予定'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* セッション予約モーダル */}
-      {isBookingModalOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setIsBookingModalOpen(false)}
-          ></div>
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4">
-              <div
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-md"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6 text-white rounded-t-2xl">
-                  <h2 className="text-2xl font-bold">セッション予約</h2>
-                </div>
-                <form onSubmit={handleBookSession} className="p-8 space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      予約日
-                    </label>
-                    <input
-                      type="text"
-                      value={selectedDate.toLocaleDateString('ja-JP')}
-                      disabled
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      会員 <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      value={bookingForm.userId}
-                      onChange={(e) =>
-                        setBookingForm({ ...bookingForm, userId: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                      required
-                    >
-                      <option value="">会員を選択してください</option>
-                      {members.map((member) => (
-                        <option key={member.id} value={member.id}>
-                          {member.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      セッションタイプ
-                    </label>
-                    <select
-                      value={bookingForm.type}
-                      onChange={(e) => setBookingForm({ ...bookingForm, type: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    >
-                      <option value="パーソナル">パーソナル</option>
-                      <option value="グループ">グループ</option>
-                      <option value="フリー">フリー</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      所要時間
-                    </label>
-                    <select
-                      value={bookingForm.duration}
-                      onChange={(e) =>
-                        setBookingForm({ ...bookingForm, duration: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    >
-                      <option value="30">30分</option>
-                      <option value="60">60分</option>
-                      <option value="90">90分</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center justify-end space-x-4">
-                    <button
-                      type="button"
-                      onClick={() => setIsBookingModalOpen(false)}
-                      className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold"
-                    >
-                      キャンセル
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
-                    >
-                      予約する
-                    </button>
-                  </div>
-                </form>
-              </div>
+              <div className="text-4xl">📅</div>
             </div>
           </div>
-        </>
-      )}
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">本日</p>
+                <p className="text-3xl font-bold text-blue-600 mt-1">{stats.today}</p>
+              </div>
+              <div className="text-4xl">📍</div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">今後の予定</p>
+                <p className="text-3xl font-bold text-green-600 mt-1">{stats.upcoming}</p>
+              </div>
+              <div className="text-4xl">⏰</div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">完了</p>
+                <p className="text-3xl font-bold text-gray-600 mt-1">{stats.completed}</p>
+              </div>
+              <div className="text-4xl">✅</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                検索
+              </label>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="会員名、トレーナー名、店舗で検索"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                ステータス
+              </label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value as SessionStatus | 'all')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">すべて</option>
+                {Object.entries(SESSION_STATUS_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                セッション種別
+              </label>
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value as SessionType | 'all')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">すべて</option>
+                {Object.entries(SESSION_TYPE_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Active Filters Display */}
+          {(selectedStatus !== 'all' || selectedType !== 'all' || searchQuery) && (
+            <div className="mt-4 flex items-center gap-2">
+              <span className="text-sm text-gray-600">フィルター適用中:</span>
+              {selectedStatus !== 'all' && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                  {SESSION_STATUS_LABELS[selectedStatus]}
+                  <button
+                    onClick={() => setSelectedStatus('all')}
+                    className="hover:text-blue-900"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {selectedType !== 'all' && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                  {SESSION_TYPE_LABELS[selectedType]}
+                  <button
+                    onClick={() => setSelectedType('all')}
+                    className="hover:text-purple-900"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {searchQuery && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+                  検索: {searchQuery}
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="hover:text-gray-900"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSelectedStatus('all');
+                  setSelectedType('all');
+                  setSearchQuery('');
+                }}
+                className="ml-auto text-sm text-blue-600 hover:text-blue-700"
+              >
+                すべてクリア
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Sessions List */}
+        <div className="bg-white rounded-lg shadow-sm">
+          {filteredSessions.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="text-6xl mb-4">📅</div>
+              <p className="text-gray-600 text-lg">セッションが見つかりません</p>
+              <p className="text-gray-500 text-sm mt-2">
+                フィルター条件を変更してください
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {filteredSessions.map((session) => (
+                <SessionRow key={session.id} session={session} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </AdminLayout>
   );
+}
+
+// Session Row Component
+function SessionRow({ session }: { session: Session }) {
+  const statusColor = SESSION_STATUS_COLORS[session.status];
+  const isSessionToday = isToday(session.scheduledDate);
+
+  return (
+    <div className="p-6 hover:bg-gray-50 transition-colors">
+      <div className="flex items-start justify-between">
+        {/* Left: Session Info */}
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            {isSessionToday && (
+              <span className="px-2 py-1 bg-blue-600 text-white text-xs font-semibold rounded">
+                本日
+              </span>
+            )}
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${statusColor.bg} ${statusColor.text} ${statusColor.border} border`}
+            >
+              {SESSION_STATUS_LABELS[session.status]}
+            </span>
+            <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+              {SESSION_TYPE_LABELS[session.type]}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                {session.memberName}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                トレーナー: {session.trainerName}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-900 font-medium">
+                {formatSessionDate(session.scheduledDate)}
+              </p>
+              <p className="text-gray-600 text-sm">
+                {formatSessionTime(session.startTime, session.endTime)} ({session.duration}分)
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+            <span className="flex items-center gap-1">
+              📍 {session.location}
+            </span>
+            <span className="flex items-center gap-1">
+              💰 ¥{session.price.toLocaleString()}
+            </span>
+          </div>
+
+          {session.notes && (
+            <p className="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+              メモ: {session.notes}
+            </p>
+          )}
+        </div>
+
+        {/* Right: Actions */}
+        <div className="ml-4 flex flex-col gap-2">
+          <button className="px-4 py-2 text-sm text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+            詳細
+          </button>
+          <button className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            編集
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Demo Data Generator
+function getDemoSessions(): Session[] {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+
+  return [
+    {
+      id: 'session_001',
+      memberId: 'member_001',
+      memberName: '山田太郎',
+      trainerId: 'trainer_001',
+      trainerName: '佐藤コーチ',
+      type: 'personal',
+      status: 'confirmed',
+      scheduledDate: today,
+      startTime: '09:00',
+      endTime: '10:00',
+      duration: 60,
+      price: 8000,
+      location: '久留米店',
+      notes: '初回トレーニング。基礎的な動作確認を重点的に。',
+      createdAt: new Date('2024-10-01'),
+      updatedAt: new Date('2024-10-15'),
+    },
+    {
+      id: 'session_002',
+      memberId: 'member_002',
+      memberName: '鈴木花子',
+      trainerId: 'trainer_002',
+      trainerName: '田中コーチ',
+      type: 'group',
+      status: 'scheduled',
+      scheduledDate: today,
+      startTime: '14:00',
+      endTime: '15:00',
+      duration: 60,
+      price: 5000,
+      location: '久留米店',
+      createdAt: new Date('2024-10-05'),
+      updatedAt: new Date('2024-10-20'),
+    },
+    {
+      id: 'session_003',
+      memberId: 'member_003',
+      memberName: '高橋健一',
+      trainerId: 'trainer_001',
+      trainerName: '佐藤コーチ',
+      type: 'personal',
+      status: 'completed',
+      scheduledDate: yesterday,
+      startTime: '10:00',
+      endTime: '11:00',
+      duration: 60,
+      price: 8000,
+      location: '久留米店',
+      notes: '前回より体幹トレーニングの強度を上げた。',
+      createdAt: new Date('2024-09-20'),
+      updatedAt: new Date('2024-11-01'),
+    },
+    {
+      id: 'session_004',
+      memberId: 'member_004',
+      memberName: '伊藤美咲',
+      trainerId: 'trainer_003',
+      trainerName: '山本コーチ',
+      type: 'trial',
+      status: 'scheduled',
+      scheduledDate: tomorrow,
+      startTime: '11:00',
+      endTime: '12:00',
+      duration: 60,
+      price: 3000,
+      location: '久留米店',
+      notes: '体験トレーニング。ジム設備の案内も含める。',
+      createdAt: new Date('2024-11-01'),
+      updatedAt: new Date('2024-11-01'),
+    },
+    {
+      id: 'session_005',
+      memberId: 'member_005',
+      memberName: '渡辺翔太',
+      trainerId: 'trainer_002',
+      trainerName: '田中コーチ',
+      type: 'personal',
+      status: 'cancelled',
+      scheduledDate: tomorrow,
+      startTime: '16:00',
+      endTime: '17:00',
+      duration: 60,
+      price: 8000,
+      location: '久留米店',
+      notes: '会員都合によりキャンセル。',
+      createdAt: new Date('2024-10-25'),
+      updatedAt: new Date('2024-11-01'),
+    },
+    {
+      id: 'session_006',
+      memberId: 'member_006',
+      memberName: '中村さくら',
+      trainerId: 'trainer_001',
+      trainerName: '佐藤コーチ',
+      type: 'consultation',
+      status: 'scheduled',
+      scheduledDate: nextWeek,
+      startTime: '13:00',
+      endTime: '14:00',
+      duration: 60,
+      price: 0,
+      location: '久留米店',
+      notes: 'トレーニングプラン見直しのためのカウンセリング。',
+      createdAt: new Date('2024-11-01'),
+      updatedAt: new Date('2024-11-01'),
+    },
+    {
+      id: 'session_007',
+      memberId: 'member_007',
+      memberName: '小林大輔',
+      trainerId: 'trainer_003',
+      trainerName: '山本コーチ',
+      type: 'group',
+      status: 'confirmed',
+      scheduledDate: tomorrow,
+      startTime: '18:00',
+      endTime: '19:00',
+      duration: 60,
+      price: 5000,
+      location: '久留米店',
+      createdAt: new Date('2024-10-28'),
+      updatedAt: new Date('2024-10-30'),
+    },
+    {
+      id: 'session_008',
+      memberId: 'member_008',
+      memberName: '加藤麻衣',
+      trainerId: 'trainer_002',
+      trainerName: '田中コーチ',
+      type: 'personal',
+      status: 'no-show',
+      scheduledDate: yesterday,
+      startTime: '15:00',
+      endTime: '16:00',
+      duration: 60,
+      price: 8000,
+      location: '久留米店',
+      notes: '連絡なしの無断欠席。後日フォロー連絡が必要。',
+      createdAt: new Date('2024-10-20'),
+      updatedAt: new Date('2024-11-01'),
+    },
+  ];
 }
