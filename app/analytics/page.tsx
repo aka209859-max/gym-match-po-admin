@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { getPoSession } from '@/lib/auth';
+import { useAuth } from '@/contexts/AuthContext';
 import AdminLayout from '@/components/AdminLayout';
 import {
   Chart as ChartJS,
@@ -47,22 +46,18 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsPage() {
-  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
 
   useEffect(() => {
-    const session = getPoSession();
-    if (!session) {
-      console.log('⚠️ No PO session found, redirecting to login');
-      router.push('/login');
-      return;
+    // 認証されている場合のみデータ取得
+    if (isAuthenticated) {
+      console.log('✅ Authenticated - Loading analytics data');
+      loadAnalyticsData('demo-gym-id');
     }
-
-    console.log('✅ PO session found:', session);
-    loadAnalyticsData(session.gymId);
-  }, [router, selectedPeriod]);
+  }, [isAuthenticated, selectedPeriod]);
 
   const loadAnalyticsData = async (gymId: string) => {
     try {

@@ -1,0 +1,46 @@
+
+> gym-match-po-admin@1.0.0 dev
+> next dev -p 3000 -p 3002
+
+   [1m[38;2;173;127;168m▲ Next.js 15.1.6[39m[22m
+   - Local:        http://localhost:3002
+   - Network:      http://169.254.0.21:3002
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1511ms
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 3.9s (587 modules)
+ GET / [32m200[39m in 4479ms
+ [32m[1m✓[22m[39m Compiled in 280ms (293 modules)
+ [37m[1m○[22m[39m Compiling /members ...
+ [32m[1m✓[22m[39m Compiled /members in 536ms (603 modules)
+ GET /members [32m200[39m in 650ms
+ [37m[1m○[22m[39m Compiling /export ...
+ [32m[1m✓[22m[39m Compiled /export in 2.7s (783 modules)
+ GET /export [32m200[39m in 2889ms
+ [32m[1m✓[22m[39m Compiled /dashboard in 328ms (792 modules)
+ GET /dashboard [32m200[39m in 376ms
+ [32m[1m✓[22m[39m Compiled /sessions in 283ms (801 modules)
+ GET /sessions [32m200[39m in 326ms
+ GET /members [32m200[39m in 16ms
+ [37m[1m○[22m[39m Compiling /analytics ...
+ [32m[1m✓[22m[39m Compiled /analytics in 690ms (816 modules)
+ GET /analytics [32m200[39m in 745ms
+ [37m[1m○[22m[39m Compiling /_not-found ...
+ [32m[1m✓[22m[39m Compiled /_not-found in 526ms (820 modules)
+ GET /login [33m404[39m in 586ms
+ GET /login [33m404[39m in 584ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /analytics [32m200[39m in 362ms
+ GET /login [33m404[39m in 19ms
+ GET /login [33m404[39m in 12ms
+ GET /login [33m404[39m in 16ms
+ GET / [32m200[39m in 38ms
+ GET /members [32m200[39m in 19ms
+ [32m[1m✓[22m[39m Compiled in 4.7s (657 modules)
+ [32m[1m✓[22m[39m Compiled in 479ms (344 modules)
+ [32m[1m✓[22m[39m Compiled in 354ms (344 modules)
+ [32m[1m✓[22m[39m Compiled in 366ms (339 modules)
+ [32m[1m✓[22m[39m Compiled in 1016ms (343 modules)
+ [32m[1m✓[22m[39m Compiled in 391ms (339 modules)
+ [32m[1m✓[22m[39m Compiled in 413ms (343 modules)
