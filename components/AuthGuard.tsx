@@ -10,19 +10,21 @@ interface AuthGuardProps {
 export default function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // マウント後フラグ（Hydration Error回避）
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
+    // クライアントサイドでマウント後のみ実行
+    if (!mounted) return;
+
     // ログインページは認証不要
     if (pathname === '/') {
       setIsAuthenticated(true);
-      setIsLoading(false);
-      return;
-    }
-
-    // クライアントサイドでのみ実行
-    if (typeof window === 'undefined') {
       return;
     }
 
@@ -33,38 +35,22 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     console.log('🔐 Auth Check:', { pathname, authenticated, accessCode });
 
     if (authenticated === 'true' && accessCode) {
-      console.log('✅ Authenticated - showing content');
+      console.log('✅ Authenticated');
       setIsAuthenticated(true);
-      setIsLoading(false);
     } else {
-      console.log('❌ Not authenticated - redirecting to login');
-      setIsLoading(false);
-      router.push('/');
+      console.log('❌ Not authenticated - redirecting');
+      router.replace('/'); // push → replace に変更（履歴に残さない）
     }
-  }, [pathname]); // router を依存配列から削除
+  }, [mounted, pathname, router]);
 
-  // ローディング中
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">読み込み中...</p>
-        </div>
-      </div>
-    );
+  // SSR時は何も表示しない（Hydration Error回避）
+  if (!mounted) {
+    return null;
   }
 
-  // 認証されていない場合、何も表示しない（リダイレクト中）
+  // ローディング中（認証チェック待ち）
   if (!isAuthenticated && pathname !== '/') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">ログインページへリダイレクト中...</p>
-        </div>
-      </div>
-    );
+    return null; // 空を返す（リダイレクト中）
   }
 
   return <>{children}</>;

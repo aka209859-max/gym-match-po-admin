@@ -18,8 +18,8 @@
  [32m[1m✓[22m[39m Compiled in 1498ms (614 modules)
 <w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/0.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/0.pack.gz'
  [32m[1m✓[22m[39m Compiled in 1306ms (614 modules)
-s.org/docs/messages/fast-refresh-reload
- GET /sessions [32m200[39m in 48ms
+ [32m[1m✓[22m[39m Compiled in 1123ms (614 modules)
+32m200[39m in 48ms
  GET /dashboard [32m200[39m in 19ms
  GET / [32m200[39m in 16ms
  GET / [32m200[39m in 12ms
@@ -44,11 +44,17 @@ s.org/docs/messages/fast-refresh-reload
  GET /_next/static/webpack/5181c2c4c1d820e6.webpack.hot-update.json [33m404[39m in 33ms
  GET /dashboard [32m200[39m in 15ms
  [33m[1m⚠[22m[39m Fast Refresh had to perfo [32m[1m✓[22m[39m Compiled in 1821ms (818 modules)
-ages/fast-refresh-reload
- GET /dashboard [32m200[39m in 245ms
+ [32m[1m✓[22m[39m Compiled in 1478ms (818 modules)
+ 245ms
  GET / [32m200[39m in 20ms
  GET / [32m200[39m in 18ms
  GET /dashboard [32m200[39m in 9ms
  GET / [32m200[39m in 11ms
  GET / [32m200[39m in 10ms
  [32m[1m✓[22m[39m Compiled in 1408ms (788 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/0.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/0.pack.gz'
+ GET / [32m200[39m in 129ms
+ GET /dashboard [32m200[39m in 17ms
+ GET / [32m200[39m in 24ms
+ GET / [32m200[39m in 22ms
+ [32m[1m✓[22m[39m Compiled in 1549ms (788 modules)
