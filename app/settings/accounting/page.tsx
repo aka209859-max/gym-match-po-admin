@@ -34,9 +34,36 @@ export default function AccountingSettingsPage() {
     const companyId = params.get('company_id');
     const companyName = params.get('company_name');
     const error = params.get('error');
+    const errorMessage = params.get('message');
 
     if (error) {
-      alert(`❌ 連携エラー: ${error}`);
+      // Enhanced error messages
+      let errorMsg = '❌ 連携エラー: ';
+      
+      switch(error) {
+        case 'credentials_not_configured':
+          errorMsg += '環境変数が設定されていません。.env.localファイルを確認してください。';
+          break;
+        case 'auth_start_failed':
+          errorMsg += `認証開始に失敗しました。${errorMessage ? `\n詳細: ${errorMessage}` : ''}`;
+          break;
+        case 'missing_parameters':
+          errorMsg += '必要なパラメータが不足しています。';
+          break;
+        case 'no_companies':
+          errorMsg += 'freeeアカウントに会社情報が登録されていません。';
+          break;
+        case 'callback_failed':
+          errorMsg += `コールバック処理に失敗しました。${errorMessage ? `\n詳細: ${errorMessage}` : ''}`;
+          break;
+        default:
+          errorMsg += error;
+          if (errorMessage) {
+            errorMsg += `\n詳細: ${errorMessage}`;
+          }
+      }
+      
+      alert(errorMsg);
       // Clean up URL parameters
       window.history.replaceState({}, '', '/settings/accounting');
       return;
@@ -84,16 +111,36 @@ export default function AccountingSettingsPage() {
   const loadConnectionStatus = async () => {
     setLoading(true);
     try {
-      // TODO: Fetch from API/localStorage
-      // For now, use demo status
-      const demoStatus: ConnectionStatus = {
-        isConnected: false,
-        software: null,
-      };
-      setConnectionStatus(demoStatus);
-      setSelectedSoftware(demoStatus.software);
+      // Check if freee is already connected by looking at stored tokens
+      const { getStoredAccessToken, isTokenExpired } = await import('@/lib/freee-auth');
+      const accessToken = getStoredAccessToken();
+      const companyName = localStorage.getItem('freee_company_name');
+      
+      if (accessToken && !isTokenExpired() && companyName) {
+        // Already connected
+        setConnectionStatus({
+          isConnected: true,
+          software: 'freee',
+          companyName: companyName,
+          connectedAt: new Date(), // TODO: Store actual connection date
+          lastSyncAt: new Date(), // TODO: Implement actual sync tracking
+        });
+        setSelectedSoftware('freee');
+      } else {
+        // Not connected or token expired
+        setConnectionStatus({
+          isConnected: false,
+          software: null,
+        });
+        setSelectedSoftware(null);
+      }
     } catch (error) {
       console.error('接続状況の読み込みエラー:', error);
+      // Fallback to not connected
+      setConnectionStatus({
+        isConnected: false,
+        software: null,
+      });
     } finally {
       setLoading(false);
     }
@@ -120,42 +167,15 @@ export default function AccountingSettingsPage() {
   };
 
   const connectFreee = async () => {
-    // Check if freee credentials are configured
-    const clientId = process.env.NEXT_PUBLIC_FREEE_CLIENT_ID;
-
-    if (!clientId || clientId === 'DEMO_CLIENT_ID') {
-      // Demo mode: Simulate connection
-      alert(
-        '🔧 デモモード\n\nfreee API認証情報が設定されていません。\n本番環境では、環境変数に以下を設定してください:\n\n- NEXT_PUBLIC_FREEE_CLIENT_ID\n- FREEE_CLIENT_SECRET\n\n現在はデモ連携をシミュレートします。'
-      );
-
-      // Demo: Simulate successful connection
-      setConnectionStatus({
-        isConnected: true,
-        software: 'freee',
-        companyName: 'リバーフィット久留米店',
-        connectedAt: new Date(),
-        lastSyncAt: new Date(),
-      });
-
-      // Store demo tokens
-      localStorage.setItem('freee_demo_mode', 'true');
-      localStorage.setItem('freee_company_name', 'リバーフィット久留米店');
-
-      return;
-    }
-
-    // Production mode: Real OAuth2.0 flow
-    const redirectUri = `${window.location.origin}/api/auth/freee/callback`;
-    const state = generateRandomState();
-
-    // Save state to localStorage for verification
-    localStorage.setItem('freee_oauth_state', state);
-
-    const authUrl = `https://accounts.secure.freee.co.jp/public_api/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&state=${state}&scope=read%20write`;
-
-    // Redirect to freee authorization page
-    window.location.href = authUrl;
+    // Redirect to authentication start endpoint
+    // This endpoint will handle:
+    // 1. CSRF state token generation
+    // 2. Environment variable validation
+    // 3. OAuth2.0 URL generation
+    // 4. Redirect to freee authorization page
+    
+    console.log('🚀 Starting freee OAuth2.0 flow...');
+    window.location.href = '/api/auth/freee/start';
   };
 
   const connectMFCloud = async () => {
@@ -192,12 +212,7 @@ export default function AccountingSettingsPage() {
     }
   };
 
-  const generateRandomState = (): string => {
-    return (
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15)
-    );
-  };
+
 
   if (loading) {
     return (

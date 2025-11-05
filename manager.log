@@ -1,0 +1,176 @@
+
+> gym-match-po-admin@1.0.0 dev
+> next dev -p 3006
+
+   [1m[38;2;173;127;168m▲ Next.js 15.1.6[39m[22m
+   - Local:        http://localhost:3006
+   - Network:      http://169.254.0.21:3006
+   - Environments: .env.local
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1681ms
+ [37m[1m○[22m[39m Compiling /api/auth/freee/start ...
+ [32m[1m✓[22m[39m Compiled /api/auth/freee/start in 998ms (332 modules)
+🚀 freee OAuth2.0 authentication started
+📍 Redirect URI: https://3006-i1wzdi6c2urpgehncb6jg-2e77fc33.sandbox.novita.ai/api/auth/freee/callback
+🔐 State token generated
+ HEAD /api/auth/freee/start [34m307[39m in 1183ms
+🚀 freee OAuth2.0 authentication started
+📍 Redirect URI: https://3006-i1wzdi6c2urpgehncb6jg-2e77fc33.sandbox.novita.ai/api/auth/freee/callback
+🔐 State token generated
+ HEAD /api/auth/freee/start [34m307[39m in 21ms
+ [37m[1m○[22m[39m Compiling /settings/accounting ...
+ [32m[1m✓[22m[39m Compiled /settings/accounting in 1685ms (630 modules)
+ GET /settings/accounting [32m200[39m in 439ms
+ [32m[1m✓[22m[39m Compiled in 181ms (303 modules)
+🚀 freee OAuth2.0 authentication started
+📍 Redirect URI: https://3006-i1wzdi6c2urpgehncb6jg-2e77fc33.sandbox.novita.ai/api/auth/freee/callback
+🔐 State token generated
+ GET /api/auth/freee/start [34m307[39m in 22ms
+ GET /settings/accounting [32m200[39m in 30ms
+🚀 freee OAuth2.0 authentication started
+📍 Redirect URI: https://3006-i1wzdi6c2urpgehncb6jg-2e77fc33.sandbox.novita.ai/api/auth/freee/callback
+🔐 State token generated
+ HEAD /api/auth/freee/start [34m307[39m in 9ms
+ GET /settings/accounting [32m200[39m in 24ms
+ [32m[1m✓[22m[39m Compiled / in 498ms (604 modules)
+ GET / [32m200[39m in 612ms
+ [32m[1m✓[22m[39m Compiled /members in 347ms (613 modules)
+ GET /members [32m200[39m in 423ms
+ GET /settings/accounting [32m200[39m in 29ms
+ [32m[1m✓[22m[39m Compiled /api/auth/freee/start in 247ms (338 modules)
+🚀 freee OAuth2.0 authentication started
+📍 Redirect URI: https://3006-i1wzdi6c2urpgehncb6jg-2e77fc33.sandbox.novita.ai/api/auth/freee/callback
+🔐 State token generated
+ GET /api/auth/freee/start [34m307[39m in 339ms
+ GET /settings/accounting [32m200[39m in 100ms
+ GET /settings/accounting [32m200[39m in 27ms
+🚀 freee OAuth2.0 authentication started
+📍 Redirect URI: https://3006-i1wzdi6c2urpgehncb6jg-2e77fc33.sandbox.novita.ai/api/auth/freee/callback
+🔐 State token generated
+ GET /api/auth/freee/start [34m307[39m in 9ms
+ GET /settings/accounting [32m200[39m in 21ms
+ GET /settings/accounting [32m200[39m in 20ms
+🚀 freee OAuth2.0 authentication started
+📍 Redirect URI: https://3006-i1wzdi6c2urpgehncb6jg-2e77fc33.sandbox.novita.ai/api/auth/freee/callback
+🔐 State token generated
+ GET /api/auth/freee/start [34m307[39m in 7ms
+ [37m[1m [22m[39m Reload env: .env.local
+ [32m[1m✓[22m[39m Compiled in 374ms (613 modules)
+ [32m[1m✓[22m[39m Compiled in 223ms (308 modules)
+ [32m[1m✓[22m[39m Compiled in 194ms (308 modules)
+ [32m[1m✓[22m[39m Compiled in 215ms (613 modules)
+ [32m[1m✓[22m[39m Compiled /api/freee/deals in 373ms (630 modules)
+🔍 Fetching deals from freee...
+❌ freee API error: { message: 'アクセスする権限がありません', code: 'expired_access_token' }
+ GET /api/freee/deals [33m401[39m in 1131ms
+ [37m[1m [22m[39m Reload env: .env.local
+ [32m[1m✓[22m[39m Compiled in 355ms (613 modules)
+ [37m[1m [22m[39m Reload env: .env.local
+ [32m[1m✓[22m[39m Compiled in 260ms (613 modules)
+ [32m[1m✓[22m[39m Compiled /api/freee/deals in 121ms (336 modules)
+🔍 Fetching deals from freee...
+✅ Deals fetched successfully
+ GET /api/freee/deals [32m200[39m in 1015ms
+🚀 Creating freee deal...
+📋 Request data: {
+  memberName: '田中太郎',
+  amount: 10000,
+  date: '2025-01-15',
+  description: 'GYM MATCH 月会費 - 2025年1月'
+}
+❌ freee API error: {
+  status_code: 400,
+  errors: [
+    { type: 'status', messages: [Array] },
+    { type: 'validation', messages: [Array] }
+  ]
+}
+ POST /api/freee/deals [33m400[39m in 723ms
+ [32m[1m✓[22m[39m Compiled in 469ms (644 modules)
+🚀 Creating freee deal...
+📋 Request data: {
+  memberName: '田中太郎',
+  amount: 10000,
+  date: '2025-01-15',
+  description: 'GYM MATCH 月会費 - 2025年1月'
+}
+❌ freee API error: {
+  status_code: 400,
+  errors: [
+    { type: 'status', messages: [Array] },
+    { type: 'validation', messages: [Array] }
+  ]
+}
+ POST /api/freee/deals [33m400[39m in 816ms
+ [32m[1m✓[22m[39m Compiled in 373ms (644 modules)
+🚀 Creating freee deal...
+📋 Request data: {
+  memberName: '田中太郎',
+  amount: 10000,
+  date: '2025-01-15',
+  description: 'GYM MATCH 月会費 - 2025年1月'
+}
+✅ Deal created successfully: {
+  deal: {
+    id: 3062060825,
+    company_id: 12252299,
+    issue_date: '2025-01-15',
+    due_date: null,
+    amount: 20000,
+    due_amount: 20000,
+    type: 'income',
+    partner_id: null,
+    partner_code: null,
+    ref_number: '',
+    status: 'unsettled',
+    deal_origin_name: '手動',
+    details: [ [Object], [Object] ],
+    receipts: []
+  }
+}
+ POST /api/freee/deals [32m200[39m in 1711ms
+ GET / [32m200[39m in 962ms
+ GET /members [32m200[39m in 183ms
+ GET /members [32m200[39m in 34ms
+ GET / [32m200[39m in 12ms
+ GET / [32m200[39m in 269ms
+ [37m[1m○[22m[39m Compiling /export ...
+ [32m[1m✓[22m[39m Compiled /export in 9.3s (842 modules)
+ GET /members [32m200[39m in 10309ms
+ GET /revenue [32m200[39m in 10325ms
+ GET /dashboard [32m200[39m in 10335ms
+ GET /export [32m200[39m in 10310ms
+ GET /sessions [32m200[39m in 10324ms
+ GET /analytics [32m200[39m in 10314ms
+ GET /settings/accounting [32m200[39m in 10355ms
+ GET /settings/accounting/journal-test [32m200[39m in 10379ms
+ GET /robots.txt [33m404[39m in 10474ms
+ GET /robots.txt [33m404[39m in 10469ms
+ GET /robots.txt [33m404[39m in 10473ms
+ GET /robots.txt [33m404[39m in 10463ms
+ GET /robots.txt [33m404[39m in 10465ms
+ GET /robots.txt [33m404[39m in 10377ms
+ GET /robots.txt [33m404[39m in 10376ms
+ GET /robots.txt [33m404[39m in 10460ms
+ GET /robots.txt [33m404[39m in 10376ms
+ GET /settings/accounting [32m200[39m in 21ms
+ [32m[1m✓[22m[39m Compiled /api/auth/freee/start in 405ms (338 modules)
+🚀 freee OAuth2.0 authentication started
+📍 Redirect URI: https://3006-i1wzdi6c2urpgehncb6jg-2e77fc33.sandbox.novita.ai/api/auth/freee/callback
+🔐 State token generated
+ GET /api/auth/freee/start [34m307[39m in 602ms
+ GET /settings/accounting [32m200[39m in 89ms
+ [32m[1m✓[22m[39m Compiled /export in 149ms (489 modules)
+ GET /export [32m200[39m in 227ms
+ [32m[1m✓[22m[39m Compiled /analytics in 142ms (498 modules)
+ GET /analytics [32m200[39m in 189ms
+ [32m[1m✓[22m[39m Compiled /revenue in 340ms (503 modules)
+ GET /revenue [32m200[39m in 397ms
+ [37m[1m○[22m[39m Compiling /sessions ...
+ [32m[1m✓[22m[39m Compiled /sessions in 639ms (509 modules)
+ GET /sessions [32m200[39m in 692ms
+ GET /members [32m200[39m in 18ms
+ [32m[1m✓[22m[39m Compiled /dashboard in 216ms (514 modules)
+ GET /dashboard [32m200[39m in 273ms
+ GET /settings/accounting [32m200[39m in 20ms

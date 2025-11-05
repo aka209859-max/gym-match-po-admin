@@ -50,25 +50,31 @@ Killed
 <w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/8.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/8.pack.gz'
  [32m[1m✓[22m[39m Compiled in 1347ms (617 modules)
  [32m[1m✓[22m[39m Compiled in 410ms (304 modules)
-/cache/webpack/client-development/2.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/2.pack.gz'
- [32m[1m✓[22m[39m Compiled in 499ms (342 modules)
- [32m[1m✓[22m[39m Compiled in 425ms (346 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/0.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/0.pack.gz'
- [32m[1m✓[22m[39m Compiled in 3.9s (665 modules)
- [32m[1m✓[22m[39m Compiled in 5.2s (665 modules)
- [32m[1m✓[22m[39m Compiled in 1557ms (665 modules)
- [32m[1m✓[22m[39m Compiled in 823ms (345 modules)
+ [37m[1m [22m[39m Reload env: .env.local
+ [32m[1m✓[22m[39m Compiled in 2.5s (617 modules)
+ [32m[1m✓[22m[39m Compiled in 2.1s (617 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/1.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/1.pack.gz'
+ [32m[1m✓[22m[39m Compiled in 536ms (304 modules)
+ [32m[1m✓[22m[39m Compiled in 476ms (304 modules)
+ [32m[1m✓[22m[39m Compiled in 766ms (304 modules)
+ [32m[1m✓[22m[39m Compiled in 363ms (304 modules)
+ [32m[1m✓[22m[39m Compiled in 362ms (304 modules)
+mpiled in 823ms (345 modules)
  [32m[1m✓[22m[39m Compiled in 882ms (346 modules)
-s)
- [32m[1m✓[22m[39m Compiled in 1116ms (821 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/0.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/0.pack.gz'
- [32m[1m✓[22m[39m Compiled in 4.9s (820 modules)
- [32m[1m✓[22m[39m Compiled in 1106ms (820 modules)
- [32m[1m✓[22m[39m Compiled in 251ms (339 modules)
- [32m[1m✓[22m[39m Compiled in 1113ms (343 modules)
- [32m[1m✓[22m[39m Compiled in 370ms (339 modules)
- [32m[1m✓[22m[39m Compiled in 448ms (343 modules)
-<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/1.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/1.pack.gz'
+ [37m[1m [22m[39m Reload env: .env.local
+ [32m[1m✓[22m[39m Compiled in 1859ms (651 modules)
+ [32m[1m✓[22m[39m Compiled in 1609ms (665 modules)
+ [32m[1m✓[22m[39m Compiled in 709ms (345 modules)
+ [32m[1m✓[22m[39m Compiled in 647ms (346 modules)
+ [32m[1m✓[22m[39m Compiled in 530ms (345 modules)
+ [32m[1m✓[22m[39m Compiled in 679ms (346 modules)
+ [32m[1m✓[22m[39m Compiled in 740ms (345 modules)
+ [32m[1m✓[22m[39m Compiled in 594ms (346 modules)
+ [32m[1m✓[22m[39m Compiled in 764ms (345 modules)
+ [32m[1m✓[22m[39m Compiled in 508ms (346 modules)
+ [32m[1m✓[22m[39m Compiled in 460ms (345 modules)
+ [32m[1m✓[22m[39m Compiled in 307ms (346 modules)
+] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/1.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/1.pack.gz'
 <w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/7.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/7.pack.gz'
  [32m[1m✓[22m[39m Compiled in 4.2s (819 modules)
  [32m[1m✓[22m[39m Compiled in 4.3s (819 modules)
@@ -76,5 +82,15 @@ s)
 <w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/2.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/2.pack.gz'
  [32m[1m✓[22m[39m Compiled in 1975ms (819 modules)
  [32m[1m✓[22m[39m Compiled in 2.1s (819 modules)
-[32m[1m✓[22m[39m Compiled in 1886ms (864 modules)
- [32m[1m✓[22m[39m Compiled in 1221ms (502 modules)
+ [37m[1m [22m[39m Reload env: .env.local
+ [32m[1m✓[22m[39m Compiled in 2.6s (805 modules)
+ [32m[1m✓[22m[39m Compiled in 2s (819 modules)
+ [32m[1m✓[22m[39m Compiled in 1765ms (819 modules)
+ [32m[1m✓[22m[39m Compiled in 1433ms (819 modules)
+ [32m[1m✓[22m[39m Compiled in 1546ms (819 modules)
+ [32m[1m✓[22m[39m Compiled in 1298ms (819 modules)
+ [32m[1m✓[22m[39m Compiled in 941ms (819 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/0.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/server-development/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/0.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/0.pack.gz'
+t-development/0.pack.gz_' -> '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/0.pack.gz'
+ [32m[1m✓[22m[39m Compiled in 435ms (864 modules)
