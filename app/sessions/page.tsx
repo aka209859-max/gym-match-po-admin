@@ -37,23 +37,49 @@ export default function SessionsPage() {
           const sessionsData = await fetchSessions(gymId);
           
           // Firestore Session型をUI Session型に変換
-          const uiSessions: Session[] = sessionsData.map(s => ({
-            id: s.id,
-            memberId: s.userId,
-            memberName: s.userName,
-            trainerId: 'trainer_default',
-            trainerName: 'トレーナー未設定',
-            scheduledDate: s.date,  // Date型のまま保持
-            startTime: s.date.toISOString().split('T')[1].substring(0, 5),
-            endTime: s.date.toISOString().split('T')[1].substring(0, 5),
-            duration: s.duration,
-            type: s.type as SessionType,
-            status: s.status as SessionStatus,
-            price: 8000,
-            location: 'メインフロア',
-            createdAt: s.date,
-            updatedAt: new Date(),
-          }));
+          console.log('📊 Firestoreから取得したセッション件数:', sessionsData.length);
+          if (sessionsData.length > 0) {
+            console.log('📊 最初のセッションデータサンプル:', sessionsData[0]);
+          }
+          
+          const uiSessions: Session[] = sessionsData.map(s => {
+            // 安全なtype変換
+            const sessionType = (['personal', 'group', 'trial', 'consultation'].includes(s.type)) 
+              ? s.type as SessionType 
+              : 'personal' as SessionType;
+            
+            // 安全なstatus変換
+            const sessionStatus = (['scheduled', 'confirmed', 'completed', 'cancelled', 'no-show'].includes(s.status))
+              ? s.status as SessionStatus
+              : 'scheduled' as SessionStatus;
+            
+            console.log('🔍 Session変換:', {
+              id: s.id,
+              userName: s.userName,
+              type: sessionType,
+              status: sessionStatus,
+              rawType: s.type,
+              rawStatus: s.status,
+            });
+            
+            return {
+              id: s.id,
+              memberId: s.userId,
+              memberName: s.userName,
+              trainerId: 'trainer_default',
+              trainerName: 'トレーナー未設定',
+              scheduledDate: s.date,  // Date型のまま保持
+              startTime: s.date.toISOString().split('T')[1].substring(0, 5),
+              endTime: s.date.toISOString().split('T')[1].substring(0, 5),
+              duration: s.duration || 60,
+              type: sessionType,
+              status: sessionStatus,
+              price: 8000,
+              location: 'メインフロア',
+              createdAt: s.date,
+              updatedAt: new Date(),
+            };
+          });
           
           setSessions(uiSessions);
           console.log('✅ セッションデータ取得完了:', uiSessions.length, '件');
@@ -290,8 +316,13 @@ export default function SessionsPage() {
 
 // Session Row Component
 function SessionRow({ session }: { session: Session }) {
-  const statusColor = SESSION_STATUS_COLORS[session.status];
-  const isSessionToday = isToday(session.scheduledDate);
+  // 安全なカラー取得（デフォルト値付き）
+  const statusColor = SESSION_STATUS_COLORS[session.status] || { 
+    bg: 'bg-gray-100', 
+    text: 'text-gray-800', 
+    border: 'border-gray-300' 
+  };
+  const isSessionToday = session.scheduledDate ? isToday(session.scheduledDate) : false;
 
   return (
     <div className="p-6 hover:bg-gray-50 transition-colors">
