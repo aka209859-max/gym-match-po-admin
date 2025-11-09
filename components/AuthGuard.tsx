@@ -14,8 +14,8 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
-    // ログインページは認証チェック不要
-    if (pathname === '/') {
+    // ログインページとパスワードリセットページは認証チェック不要
+    if (pathname === '/' || pathname === '/reset-password') {
       return;
     }
 
@@ -30,8 +30,8 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     }
   }, [isAuthenticated, isLoading, pathname, router]);
 
-  // ログインページは常に表示
-  if (pathname === '/') {
+  // ログインページとパスワードリセットページは常に表示
+  if (pathname === '/' || pathname === '/reset-password') {
     return <>{children}</>;
   }
 

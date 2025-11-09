@@ -1,8 +1,9 @@
 'use client';
 
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -10,7 +11,8 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
-  const [gymName] = useState('リバーフィット久留米店');
+  const router = useRouter();
+  const { gymName, logout } = useAuth();
 
   const navigation = [
     {
@@ -78,16 +80,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
   ];
 
-  const handleLogout = () => {
-    // Context API経由でログアウト処理は行わない
-    // （AdminLayoutはクライアントコンポーネントだがAuthContextを直接使用しない設計）
-    
-    // 直接localStorageをクリア
-    localStorage.removeItem('gym_match_authenticated');
-    localStorage.removeItem('gym_match_access_code');
-    
-    // ログインページにリダイレクト（完全リロード）
-    window.location.href = '/';
+  const handleLogout = async () => {
+    try {
+      console.log('🚪 AdminLayout: Initiating logout...');
+      
+      // AuthContext経由でログアウト（Firebase + localStorage両方クリア）
+      await logout();
+      
+      console.log('✅ AdminLayout: Logout successful');
+      
+      // ログインページにリダイレクト
+      router.replace('/');
+    } catch (error) {
+      console.error('❌ AdminLayout: Logout error:', error);
+      
+      // エラーが発生しても強制的にログインページへ
+      router.replace('/');
+    }
   };
 
   return (
@@ -107,7 +116,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <p className="text-xs text-blue-200">PO管理ページ</p>
             </div>
           </div>
-          <p className="text-sm font-medium mt-2">{gymName}</p>
+          <p className="text-sm font-medium mt-2">{gymName || 'ジム名未設定'}</p>
         </div>
 
         {/* ナビゲーション */}
