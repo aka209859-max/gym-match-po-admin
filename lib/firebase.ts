@@ -48,8 +48,10 @@ export { app, auth, db, storage };
 export const COLLECTIONS = {
   USERS: 'users',
   GYMS: 'gyms',
+  MEMBERS: 'members',
   PO_OWNERS: 'poOwners',
   SESSIONS: 'sessions',
+  BOOKINGS: 'bookings',
   WORKOUT_LOGS: 'workoutLogs',
 } as const;
 
