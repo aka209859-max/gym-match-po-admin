@@ -36,21 +36,45 @@ export default function MembersPage() {
           setIsLoading(true);
           const membersData = await fetchMembers(gymId);
           
+          console.log('📊 Firestoreから取得したデータ件数:', membersData.length);
+          if (membersData.length > 0) {
+            console.log('📊 最初の会員データサンプル:', membersData[0]);
+          }
+          
           // Firestore Member型をUI Member型に変換
-          const uiMembers: Member[] = membersData.map(m => ({
-            id: m.id,
-            name: m.name,
-            email: m.email,
-            phone: m.phone,
-            status: m.isActive ? 'active' : 'inactive',
-            contractType: m.contractType as ContractType,
-            joinDate: m.joinDate,  // Date型のまま保持
-            lastVisit: m.lastVisit,  // Date型のまま保持
-            totalSessions: m.totalSessions,
-            totalRevenue: 0,  // デフォルト値
-            createdAt: m.joinDate,  // createdAtとして使用
-            updatedAt: new Date(),  // 現在時刻
-          }));
+          const uiMembers: Member[] = membersData.map(m => {
+            // 安全なcontractType変換
+            const contractType = (['premium', 'standard', 'basic', 'trial'].includes(m.contractType)) 
+              ? m.contractType as ContractType 
+              : 'basic' as ContractType;
+            
+            // 安全なstatus変換
+            const status = m.isActive ? 'active' as MemberStatus : 'inactive' as MemberStatus;
+            
+            console.log('🔍 Member変換:', {
+              id: m.id,
+              name: m.name,
+              status,
+              contractType,
+              isActive: m.isActive,
+              rawContractType: m.contractType,
+            });
+            
+            return {
+              id: m.id,
+              name: m.name,
+              email: m.email,
+              phone: m.phone,
+              status: status,
+              contractType: contractType,
+              joinDate: m.joinDate,  // Date型のまま保持
+              lastVisit: m.lastVisit || m.joinDate,  // lastVisitがない場合はjoinDateを使用
+              totalSessions: m.totalSessions || 0,
+              totalRevenue: 0,  // デフォルト値
+              createdAt: m.joinDate,  // createdAtとして使用
+              updatedAt: new Date(),  // 現在時刻
+            };
+          });
           
           setMembers(uiMembers);
           console.log('✅ 会員データ取得完了:', uiMembers.length, '件');
@@ -298,9 +322,17 @@ export default function MembersPage() {
 
 // Member Row Component
 function MemberRow({ member }: { member: Member }) {
-  const statusColor = MEMBER_STATUS_COLORS[member.status];
-  const contractTypeColor = CONTRACT_TYPE_COLORS[member.contractType];
-  const activityStatus = getMemberActivityStatus(member.lastVisit);
+  // 安全なカラー取得（デフォルト値付き）
+  const statusColor = MEMBER_STATUS_COLORS[member.status] || { 
+    bg: 'bg-gray-100', 
+    text: 'text-gray-800', 
+    border: 'border-gray-300' 
+  };
+  const contractTypeColor = CONTRACT_TYPE_COLORS[member.contractType] || { 
+    bg: 'bg-blue-100', 
+    text: 'text-blue-800' 
+  };
+  const activityStatus = member.lastVisit ? getMemberActivityStatus(member.lastVisit) : { text: '不明', color: 'text-gray-500' };
   const membershipMonths = membershipDurationMonths(member.joinDate);
 
   return (
