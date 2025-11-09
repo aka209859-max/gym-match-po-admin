@@ -1,11 +1,150 @@
 
 > gym-match-po-admin@1.0.0 dev
-> next dev -p 3000 -p 3006
+> next dev -p 3000
 
    [1m[38;2;173;127;168m▲ Next.js 15.1.6[39m[22m
-   - Local:        http://localhost:3006
-   - Network:      http://169.254.0.21:3006
+   - Local:        http://localhost:3000
+   - Network:      http://169.254.0.21:3000
    - Environments: .env.local
 
  [32m[1m✓[22m[39m Starting...
- [32m[1m✓[22m[39m Ready in 1843ms
+ [32m[1m✓[22m[39m Ready in 1551ms
+ [37m[1m○[22m[39m Compiling /_not-found ...
+ [32m[1m✓[22m[39m Compiled /_not-found in 7s (747 modules)
+ GET /_next/static/webpack/aaa4f7b698d13aa3.webpack.hot-update.json [33m404[39m in 7687ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload due to a runtime error.
+ [32m[1m✓[22m[39m Compiled in 222ms (314 modules)
+ [37m[1m○[22m[39m Compiling /members ...
+ [32m[1m✓[22m[39m Compiled /members in 1311ms (765 modules)
+ GET /_next/static/webpack/aaa4f7b698d13aa3.webpack.hot-update.json [33m404[39m in 1485ms
+ GET /members [32m200[39m in 1494ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload due to a runtime error.
+ GET /members [32m200[39m in 19ms
+ [32m[1m✓[22m[39m Compiled / in 488ms (768 modules)
+ GET / [32m200[39m in 846ms
+ GET /members [32m200[39m in 20ms
+ [32m[1m✓[22m[39m Compiled /sessions in 306ms (777 modules)
+ GET /sessions [32m200[39m in 381ms
+ [32m[1m✓[22m[39m Compiled in 1102ms (777 modules)
+ GET /sessions [32m200[39m in 89ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions [32m200[39m in 277ms
+ [32m[1m✓[22m[39m Compiled in 555ms (777 modules)
+ GET /sessions [32m200[39m in 289ms
+ [32m[1m✓[22m[39m Compiled in 563ms (791 modules)
+ GET /sessions [32m200[39m in 52ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions [32m200[39m in 150ms
+ [37m[1m○[22m[39m Compiling /sessions/[id] ...
+ [32m[1m✓[22m[39m Compiled /sessions/[id] in 1192ms (786 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 2025ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 30ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 30ms
+ [32m[1m✓[22m[39m Compiled in 1025ms (786 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 120ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 311ms
+ [32m[1m✓[22m[39m Compiled in 543ms (800 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 90ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/[id]/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 226ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 57ms
+ [32m[1m✓[22m[39m Compiled in 1048ms (800 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 108ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/[id]/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 293ms
+ [32m[1m✓[22m[39m Compiled in 650ms (800 modules)
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload due to a runtime error.
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 319ms
+ [32m[1m✓[22m[39m Compiled in 845ms (786 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 70ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload due to a runtime error.
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 264ms
+ [32m[1m✓[22m[39m Compiled in 535ms (786 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 67ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 171ms
+ [32m[1m✓[22m[39m Compiled in 594ms (786 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 68ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 199ms
+ [32m[1m✓[22m[39m Compiled in 500ms (800 modules)
+ [32m[1m✓[22m[39m Compiled in 508ms (800 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 70ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/[id]/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 152ms
+ [32m[1m✓[22m[39m Compiled in 1031ms (800 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 110ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/[id]/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 283ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 41ms
+ [32m[1m✓[22m[39m Compiled in 870ms (800 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 97ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/[id]/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 270ms
+ GET / [32m200[39m in 43ms
+ GET /members [32m200[39m in 21ms
+ GET /sessions [32m200[39m in 20ms
+ [37m[1m○[22m[39m Compiling /dashboard ...
+ [32m[1m✓[22m[39m Compiled /dashboard in 831ms (793 modules)
+ GET /dashboard [32m200[39m in 909ms
+ GET /members [32m200[39m in 19ms
+ GET /sessions [32m200[39m in 17ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 37ms
+ [32m[1m✓[22m[39m Compiled in 962ms (793 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 92ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 305ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 42ms
+ [37m[1m○[22m[39m Compiling /settings/accounting ...
+ [32m[1m✓[22m[39m Compiled /settings/accounting in 756ms (802 modules)
+ GET /settings/accounting [32m200[39m in 844ms
+ [37m[1m○[22m[39m Compiling /accounting ...
+ [32m[1m✓[22m[39m Compiled /accounting in 3.8s (1182 modules)
+ GET /accounting [32m200[39m in 3893ms
+ GET /accounting [32m200[39m in 10ms
+ [37m[1m○[22m[39m Compiling /analytics ...
+ [32m[1m✓[22m[39m Compiled /analytics in 1567ms (1186 modules)
+ GET /analytics [32m200[39m in 1669ms
+ [32m[1m✓[22m[39m Compiled /revenue in 391ms (1187 modules)
+ GET /revenue [32m200[39m in 459ms
+ [37m[1m○[22m[39m Compiling /payments ...
+ [32m[1m✓[22m[39m Compiled /payments in 549ms (1190 modules)
+ GET /payments [32m200[39m in 661ms
+ GET /dashboard [32m200[39m in 18ms
+ [32m[1m✓[22m[39m Compiled in 469ms (522 modules)
+ [32m[1m✓[22m[39m Compiled in 279ms (522 modules)
+ [32m[1m✓[22m[39m Compiled in 137ms (522 modules)
+ [32m[1m✓[22m[39m Compiled in 107ms (522 modules)
+ [32m[1m✓[22m[39m Compiled in 102ms (522 modules)
+ [32m[1m✓[22m[39m Compiled in 97ms (522 modules)
+ [32m[1m✓[22m[39m Compiled / in 429ms (668 modules)
+ GET / [32m200[39m in 849ms
+ [32m[1m✓[22m[39m Compiled /members in 462ms (482 modules)
+ GET /members [32m200[39m in 556ms
+ [32m[1m✓[22m[39m Compiled /sessions in 375ms (488 modules)
+ GET /sessions [32m200[39m in 451ms
+ [32m[1m✓[22m[39m Compiled /sessions/[id] in 360ms (480 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 434ms
+ [32m[1m✓[22m[39m Compiled in 1621ms (1010 modules)
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/[id]/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 113ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 291ms
+ [32m[1m✓[22m[39m Compiled in 678ms (1010 modules)
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/[id]/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 107ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 231ms
+ [32m[1m✓[22m[39m Compiled in 607ms (1010 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 63ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/sessions/[id]/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 172ms
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 50ms
+ [32m[1m✓[22m[39m Compiled in 987ms (996 modules)
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload due to a runtime error.
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 399ms
+ [32m[1m✓[22m[39m Compiled in 960ms (996 modules)
+ [32m[1m✓[22m[39m Compiled in 873ms (996 modules)
+ [32m[1m✓[22m[39m Compiled in 384ms (996 modules)
+ [32m[1m✓[22m[39m Compiled in 729ms (996 modules)
+ GET /sessions/4FTHKk4Hah4DTJOS6Tlh [32m200[39m in 467ms
+Killed

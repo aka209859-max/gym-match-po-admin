@@ -63,3 +63,11 @@
  [32m[1m✓[22m[39m Compiled in 386ms (327 modules)
  [32m[1m✓[22m[39m Compiled in 415ms (789 modules)
  [32m[1m✓[22m[39m Compiled in 475ms (789 modules)
+ [32m[1m✓[22m[39m Compiled in 904ms (789 modules)
+ [31m[1m⨯[22m[39m [TypeError: Cannot read properties of undefined (reading 'bind')] {
+  page: '/members'
+}
+ [37m[1m○[22m[39m Compiling /_error ...
+ [32m[1m✓[22m[39m Compiled /_error in 2.6s (1017 modules)
+ GET /members [31m500[39m in 4343ms
+[?25h

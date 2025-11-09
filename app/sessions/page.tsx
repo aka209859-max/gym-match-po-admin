@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchSessions } from '@/lib/firestore';
@@ -316,6 +317,8 @@ export default function SessionsPage() {
 
 // Session Row Component
 function SessionRow({ session }: { session: Session }) {
+  const router = useRouter();
+  
   // 安全なカラー取得（デフォルト値付き）
   const statusColor = SESSION_STATUS_COLORS[session.status] || { 
     bg: 'bg-gray-100', 
@@ -323,6 +326,10 @@ function SessionRow({ session }: { session: Session }) {
     border: 'border-gray-300' 
   };
   const isSessionToday = session.scheduledDate ? isToday(session.scheduledDate) : false;
+  
+  const handleViewDetail = () => {
+    router.push(`/sessions/${session.id}`);
+  };
 
   return (
     <div className="p-6 hover:bg-gray-50 transition-colors">
@@ -383,7 +390,10 @@ function SessionRow({ session }: { session: Session }) {
 
         {/* Right: Actions */}
         <div className="ml-4 flex flex-col gap-2">
-          <button className="px-4 py-2 text-sm text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+          <button 
+            onClick={handleViewDetail}
+            className="px-4 py-2 text-sm text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
+          >
             詳細
           </button>
           <button className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
