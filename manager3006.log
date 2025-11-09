@@ -1,0 +1,11 @@
+
+> gym-match-po-admin@1.0.0 dev
+> next dev -p 3000 -p 3006
+
+   [1m[38;2;173;127;168m▲ Next.js 15.1.6[39m[22m
+   - Local:        http://localhost:3006
+   - Network:      http://169.254.0.21:3006
+   - Environments: .env.local
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1843ms

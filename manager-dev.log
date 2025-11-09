@@ -1,0 +1,20 @@
+   ▲ Next.js 15.1.6
+   - Local:        http://localhost:3000
+   - Network:      http://169.254.0.21:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1738ms
+ ○ Compiling /revenue ...
+ ✓ Compiled /revenue in 7.1s (616 modules)
+ GET /revenue 200 in 8127ms
+ ✓ Compiled in 232ms (305 modules)
+ GET /revenue 200 in 29ms
+ ○ Compiling / ...
+ ✓ Compiled / in 761ms (609 modules)
+ GET / 200 in 884ms
+ ○ Compiling /members ...
+ ✓ Compiled /members in 1471ms (783 modules)
+ GET /members 200 in 1660ms
+ GET / 200 in 80ms
+ GET /members 200 in 16ms
