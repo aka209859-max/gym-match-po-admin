@@ -46,18 +46,18 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, gymId } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
 
   useEffect(() => {
-    // 認証されている場合のみデータ取得
-    if (isAuthenticated) {
-      console.log('✅ Authenticated - Loading analytics data');
-      loadAnalyticsData('demo-gym-id');
+    // 認証されており、gymIdが取得できている場合のみデータ取得
+    if (isAuthenticated && gymId) {
+      console.log('✅ Authenticated - Loading analytics data for gymId:', gymId);
+      loadAnalyticsData(gymId);
     }
-  }, [isAuthenticated, selectedPeriod]);
+  }, [isAuthenticated, gymId, selectedPeriod]);
 
   const loadAnalyticsData = async (gymId: string) => {
     try {

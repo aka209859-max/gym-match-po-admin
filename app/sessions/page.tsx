@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
+import { useAuth } from '@/contexts/AuthContext';
+import { fetchSessions } from '@/lib/firestore';
 import {
   Session,
   SessionStatus,
@@ -17,11 +19,49 @@ import {
 } from '@/types/session';
 
 export default function SessionsPage() {
-  const [sessions, setSessions] = useState<Session[]>(getDemoSessions());
+  const { isAuthenticated, gymId } = useAuth();
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<SessionFilter>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<SessionStatus | 'all'>('all');
   const [selectedType, setSelectedType] = useState<SessionType | 'all'>('all');
+
+  // ✅ 実データ取得
+  useEffect(() => {
+    if (isAuthenticated && gymId) {
+      const loadSessions = async () => {
+        try {
+          console.log('📅 セッションデータ取得開始 - gymId:', gymId);
+          setIsLoading(true);
+          const sessionsData = await fetchSessions(gymId);
+          
+          // Firestore Session型をUI Session型に変換
+          const uiSessions: Session[] = sessionsData.map(s => ({
+            id: s.id,
+            memberName: s.userName,
+            trainerName: 'トレーナー未設定',
+            date: s.date.toISOString().split('T')[0],
+            startTime: s.date.toISOString().split('T')[1].substring(0, 5),
+            endTime: s.date.toISOString().split('T')[1].substring(0, 5),
+            duration: s.duration,
+            type: s.type as SessionType,
+            status: s.status as SessionStatus,
+            location: 'メインフロア',
+            revenue: 8000,
+          }));
+          
+          setSessions(uiSessions);
+          console.log('✅ セッションデータ取得完了:', uiSessions.length, '件');
+        } catch (error) {
+          console.error('❌ セッションデータ取得エラー:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadSessions();
+    }
+  }, [isAuthenticated, gymId]);
 
   // Filter sessions based on criteria
   const filteredSessions = useMemo(() => {
@@ -321,157 +361,3 @@ function SessionRow({ session }: { session: Session }) {
 }
 
 // Demo Data Generator
-function getDemoSessions(): Session[] {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const nextWeek = new Date(today);
-  nextWeek.setDate(nextWeek.getDate() + 7);
-
-  return [
-    {
-      id: 'session_001',
-      memberId: 'member_001',
-      memberName: '山田太郎',
-      trainerId: 'trainer_001',
-      trainerName: '佐藤コーチ',
-      type: 'personal',
-      status: 'confirmed',
-      scheduledDate: today,
-      startTime: '09:00',
-      endTime: '10:00',
-      duration: 60,
-      price: 8000,
-      location: '久留米店',
-      notes: '初回トレーニング。基礎的な動作確認を重点的に。',
-      createdAt: new Date('2024-10-01'),
-      updatedAt: new Date('2024-10-15'),
-    },
-    {
-      id: 'session_002',
-      memberId: 'member_002',
-      memberName: '鈴木花子',
-      trainerId: 'trainer_002',
-      trainerName: '田中コーチ',
-      type: 'group',
-      status: 'scheduled',
-      scheduledDate: today,
-      startTime: '14:00',
-      endTime: '15:00',
-      duration: 60,
-      price: 5000,
-      location: '久留米店',
-      createdAt: new Date('2024-10-05'),
-      updatedAt: new Date('2024-10-20'),
-    },
-    {
-      id: 'session_003',
-      memberId: 'member_003',
-      memberName: '高橋健一',
-      trainerId: 'trainer_001',
-      trainerName: '佐藤コーチ',
-      type: 'personal',
-      status: 'completed',
-      scheduledDate: yesterday,
-      startTime: '10:00',
-      endTime: '11:00',
-      duration: 60,
-      price: 8000,
-      location: '久留米店',
-      notes: '前回より体幹トレーニングの強度を上げた。',
-      createdAt: new Date('2024-09-20'),
-      updatedAt: new Date('2024-11-01'),
-    },
-    {
-      id: 'session_004',
-      memberId: 'member_004',
-      memberName: '伊藤美咲',
-      trainerId: 'trainer_003',
-      trainerName: '山本コーチ',
-      type: 'trial',
-      status: 'scheduled',
-      scheduledDate: tomorrow,
-      startTime: '11:00',
-      endTime: '12:00',
-      duration: 60,
-      price: 3000,
-      location: '久留米店',
-      notes: '体験トレーニング。ジム設備の案内も含める。',
-      createdAt: new Date('2024-11-01'),
-      updatedAt: new Date('2024-11-01'),
-    },
-    {
-      id: 'session_005',
-      memberId: 'member_005',
-      memberName: '渡辺翔太',
-      trainerId: 'trainer_002',
-      trainerName: '田中コーチ',
-      type: 'personal',
-      status: 'cancelled',
-      scheduledDate: tomorrow,
-      startTime: '16:00',
-      endTime: '17:00',
-      duration: 60,
-      price: 8000,
-      location: '久留米店',
-      notes: '会員都合によりキャンセル。',
-      createdAt: new Date('2024-10-25'),
-      updatedAt: new Date('2024-11-01'),
-    },
-    {
-      id: 'session_006',
-      memberId: 'member_006',
-      memberName: '中村さくら',
-      trainerId: 'trainer_001',
-      trainerName: '佐藤コーチ',
-      type: 'consultation',
-      status: 'scheduled',
-      scheduledDate: nextWeek,
-      startTime: '13:00',
-      endTime: '14:00',
-      duration: 60,
-      price: 0,
-      location: '久留米店',
-      notes: 'トレーニングプラン見直しのためのカウンセリング。',
-      createdAt: new Date('2024-11-01'),
-      updatedAt: new Date('2024-11-01'),
-    },
-    {
-      id: 'session_007',
-      memberId: 'member_007',
-      memberName: '小林大輔',
-      trainerId: 'trainer_003',
-      trainerName: '山本コーチ',
-      type: 'group',
-      status: 'confirmed',
-      scheduledDate: tomorrow,
-      startTime: '18:00',
-      endTime: '19:00',
-      duration: 60,
-      price: 5000,
-      location: '久留米店',
-      createdAt: new Date('2024-10-28'),
-      updatedAt: new Date('2024-10-30'),
-    },
-    {
-      id: 'session_008',
-      memberId: 'member_008',
-      memberName: '加藤麻衣',
-      trainerId: 'trainer_002',
-      trainerName: '田中コーチ',
-      type: 'personal',
-      status: 'no-show',
-      scheduledDate: yesterday,
-      startTime: '15:00',
-      endTime: '16:00',
-      duration: 60,
-      price: 8000,
-      location: '久留米店',
-      notes: '連絡なしの無断欠席。後日フォロー連絡が必要。',
-      createdAt: new Date('2024-10-20'),
-      updatedAt: new Date('2024-11-01'),
-    },
-  ];
-}

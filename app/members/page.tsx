@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
+import { useAuth } from '@/contexts/AuthContext';
+import { fetchMembers } from '@/lib/firestore';
 import {
   Member,
   MemberStatus,
@@ -18,10 +20,46 @@ import {
 } from '@/types/member';
 
 export default function MembersPage() {
-  const [members, setMembers] = useState<Member[]>(getDemoMembers());
+  const { isAuthenticated, gymId } = useAuth();
+  const [members, setMembers] = useState<Member[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<MemberStatus | 'all'>('all');
   const [selectedContractType, setSelectedContractType] = useState<ContractType | 'all'>('all');
+
+  // ✅ 実データ取得
+  useEffect(() => {
+    if (isAuthenticated && gymId) {
+      const loadMembers = async () => {
+        try {
+          console.log('👥 会員データ取得開始 - gymId:', gymId);
+          setIsLoading(true);
+          const membersData = await fetchMembers(gymId);
+          
+          // Firestore Member型をUI Member型に変換
+          const uiMembers: Member[] = membersData.map(m => ({
+            id: m.id,
+            name: m.name,
+            email: m.email,
+            phone: m.phone,
+            status: m.isActive ? 'active' : 'inactive',
+            contractType: m.contractType as ContractType,
+            joinDate: m.joinDate.toISOString().split('T')[0],
+            lastVisit: m.lastVisit.toISOString().split('T')[0],
+            totalSessions: m.totalSessions,
+          }));
+          
+          setMembers(uiMembers);
+          console.log('✅ 会員データ取得完了:', uiMembers.length, '件');
+        } catch (error) {
+          console.error('❌ 会員データ取得エラー:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadMembers();
+    }
+  }, [isAuthenticated, gymId]);
 
   // Filter members based on criteria
   const filteredMembers = useMemo(() => {
@@ -348,190 +386,3 @@ function MemberRow({ member }: { member: Member }) {
 }
 
 // Demo Data Generator
-function getDemoMembers(): Member[] {
-  const today = new Date();
-  const oneMonthAgo = new Date(today);
-  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-  const threeMonthsAgo = new Date(today);
-  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-  const sixMonthsAgo = new Date(today);
-  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-  const oneYearAgo = new Date(today);
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-  const oneWeekFromNow = new Date(today);
-  oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
-  const oneMonthFromNow = new Date(today);
-  oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
-  const threeMonthsFromNow = new Date(today);
-  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-
-  return [
-    {
-      id: 'member_001',
-      name: '山田太郎',
-      nameKana: 'ヤマダタロウ',
-      email: 'yamada@example.com',
-      phone: '090-1234-5678',
-      contractType: 'premium',
-      status: 'active',
-      joinDate: oneYearAgo,
-      expiryDate: threeMonthsFromNow,
-      lastVisit: today,
-      totalSessions: 48,
-      totalRevenue: 384000,
-      notes: '筋力トレーニング重点。プロテイン購入希望あり。',
-      createdAt: oneYearAgo,
-      updatedAt: today,
-    },
-    {
-      id: 'member_002',
-      name: '鈴木花子',
-      nameKana: 'スズキハナコ',
-      email: 'suzuki@example.com',
-      phone: '080-2345-6789',
-      contractType: 'standard',
-      status: 'active',
-      joinDate: sixMonthsAgo,
-      expiryDate: oneWeekFromNow,
-      lastVisit: threeMonthsAgo,
-      totalSessions: 24,
-      totalRevenue: 144000,
-      notes: '有酸素運動メイン。更新案内送付済み。',
-      createdAt: sixMonthsAgo,
-      updatedAt: today,
-    },
-    {
-      id: 'member_003',
-      name: '高橋健一',
-      nameKana: 'タカハシケンイチ',
-      email: 'takahashi@example.com',
-      phone: '090-3456-7890',
-      contractType: 'basic',
-      status: 'active',
-      joinDate: threeMonthsAgo,
-      expiryDate: oneMonthFromNow,
-      lastVisit: oneMonthAgo,
-      totalSessions: 12,
-      totalRevenue: 60000,
-      createdAt: threeMonthsAgo,
-      updatedAt: today,
-    },
-    {
-      id: 'member_004',
-      name: '伊藤美咲',
-      nameKana: 'イトウミサキ',
-      email: 'ito@example.com',
-      phone: '080-4567-8901',
-      contractType: 'trial',
-      status: 'trial',
-      joinDate: oneMonthAgo,
-      lastVisit: oneMonthAgo,
-      totalSessions: 2,
-      totalRevenue: 6000,
-      notes: '体験トレーニング実施済み。入会検討中。',
-      createdAt: oneMonthAgo,
-      updatedAt: today,
-    },
-    {
-      id: 'member_005',
-      name: '渡辺翔太',
-      nameKana: 'ワタナベショウタ',
-      email: 'watanabe@example.com',
-      phone: '090-5678-9012',
-      contractType: 'premium',
-      status: 'inactive',
-      joinDate: oneYearAgo,
-      expiryDate: threeMonthsFromNow,
-      lastVisit: sixMonthsAgo,
-      totalSessions: 30,
-      totalRevenue: 240000,
-      notes: '休会申請済み（仕事都合）。3ヶ月後復帰予定。',
-      createdAt: oneYearAgo,
-      updatedAt: sixMonthsAgo,
-    },
-    {
-      id: 'member_006',
-      name: '中村さくら',
-      nameKana: 'ナカムラサクラ',
-      email: 'nakamura@example.com',
-      phone: '080-6789-0123',
-      contractType: 'standard',
-      status: 'active',
-      joinDate: oneYearAgo,
-      expiryDate: threeMonthsFromNow,
-      lastVisit: today,
-      totalSessions: 52,
-      totalRevenue: 312000,
-      notes: 'ヨガクラス参加希望。次回更新時にプレミアムへ変更検討。',
-      createdAt: oneYearAgo,
-      updatedAt: today,
-    },
-    {
-      id: 'member_007',
-      name: '小林大輔',
-      nameKana: 'コバヤシダイスケ',
-      email: 'kobayashi@example.com',
-      phone: '090-7890-1234',
-      contractType: 'basic',
-      status: 'active',
-      joinDate: threeMonthsAgo,
-      expiryDate: oneMonthFromNow,
-      lastVisit: oneMonthAgo,
-      totalSessions: 10,
-      totalRevenue: 50000,
-      createdAt: threeMonthsAgo,
-      updatedAt: today,
-    },
-    {
-      id: 'member_008',
-      name: '加藤麻衣',
-      nameKana: 'カトウマイ',
-      email: 'kato@example.com',
-      phone: '080-8901-2345',
-      contractType: 'premium',
-      status: 'expired',
-      joinDate: oneYearAgo,
-      expiryDate: oneMonthAgo,
-      lastVisit: threeMonthsAgo,
-      totalSessions: 36,
-      totalRevenue: 288000,
-      notes: '期限切れ。更新案内未返答。再入会キャンペーン案内予定。',
-      createdAt: oneYearAgo,
-      updatedAt: oneMonthAgo,
-    },
-    {
-      id: 'member_009',
-      name: '佐々木優',
-      nameKana: 'ササキユウ',
-      email: 'sasaki@example.com',
-      phone: '090-9012-3456',
-      contractType: 'standard',
-      status: 'active',
-      joinDate: sixMonthsAgo,
-      expiryDate: threeMonthsFromNow,
-      lastVisit: today,
-      totalSessions: 28,
-      totalRevenue: 168000,
-      createdAt: sixMonthsAgo,
-      updatedAt: today,
-    },
-    {
-      id: 'member_010',
-      name: '田中誠',
-      nameKana: 'タナカマコト',
-      email: 'tanaka@example.com',
-      phone: '080-0123-4567',
-      contractType: 'basic',
-      status: 'active',
-      joinDate: oneMonthAgo,
-      expiryDate: oneMonthFromNow,
-      lastVisit: oneMonthAgo,
-      totalSessions: 4,
-      totalRevenue: 20000,
-      notes: '新規入会。トレーニングメニュー作成済み。',
-      createdAt: oneMonthAgo,
-      updatedAt: today,
-    },
-  ];
-}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { fetchKPIData, fetchRecentMembers } from '@/lib/firestore';
 
 interface KPIData {
   totalMembers: number;
@@ -20,7 +21,7 @@ interface Member {
 }
 
 export default function DashboardPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, gymId } = useAuth();
   const [kpiData, setKpiData] = useState<KPIData>({
     totalMembers: 0,
     activeMembers: 0,
@@ -32,31 +33,33 @@ export default function DashboardPage() {
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   useEffect(() => {
-    // 認証されている場合のみデータ取得
-    if (isAuthenticated) {
+    // 認証されており、gymIdが取得できている場合のみデータ取得
+    if (isAuthenticated && gymId) {
       const loadData = async () => {
         try {
-          console.log('📊 ダッシュボードデータ取得開始');
+          console.log('📊 ダッシュボードデータ取得開始 - gymId:', gymId);
+          setIsLoadingData(true);
 
-          // デモデータ（実際はFirestoreから取得）
-          setKpiData({
-            totalMembers: 150,
-            activeMembers: 120,
-            dormantMembers: 30,
-            todaySessions: 8,
-            newMembersThisMonth: 12,
-          });
-
-          // デモ会員データ
-          setRecentMembers([
-            { id: '1', name: '山田太郎', joinDate: new Date('2024-01-15'), isActive: true },
-            { id: '2', name: '佐藤花子', joinDate: new Date('2024-01-14'), isActive: true },
-            { id: '3', name: '鈴木一郎', joinDate: new Date('2024-01-13'), isActive: false },
-            { id: '4', name: '田中美咲', joinDate: new Date('2024-01-12'), isActive: true },
-            { id: '5', name: '高橋健太', joinDate: new Date('2024-01-11'), isActive: true },
+          // ✅ 実データ取得（Firestoreから）
+          const [kpiResult, membersResult] = await Promise.all([
+            fetchKPIData(gymId),
+            fetchRecentMembers(gymId),
           ]);
 
-          console.log('✅ ダッシュボードデータ取得完了');
+          setKpiData({
+            totalMembers: kpiResult.totalMembers,
+            activeMembers: kpiResult.activeMembers,
+            dormantMembers: kpiResult.dormantMembers,
+            todaySessions: kpiResult.todaySessions,
+            newMembersThisMonth: kpiResult.newMembersThisMonth,
+          });
+
+          setRecentMembers(membersResult);
+
+          console.log('✅ ダッシュボードデータ取得完了', {
+            kpi: kpiResult,
+            membersCount: membersResult.length,
+          });
           setIsLoadingData(false);
         } catch (error) {
           console.error('❌ データ取得エラー:', error);
@@ -66,7 +69,7 @@ export default function DashboardPage() {
 
       loadData();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, gymId]);
 
   if (isLoadingData) {
     return (

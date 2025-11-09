@@ -44,17 +44,17 @@ interface RevenueData {
 }
 
 export default function RevenuePage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, gymId } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [revenueData, setRevenueData] = useState<RevenueData | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
 
   useEffect(() => {
-    if (isAuthenticated) {
-      console.log('✅ Authenticated - Loading revenue data');
+    if (isAuthenticated && gymId) {
+      console.log('✅ Authenticated - Loading revenue data for gymId:', gymId);
       loadRevenueData();
     }
-  }, [isAuthenticated, selectedPeriod]);
+  }, [isAuthenticated, gymId, selectedPeriod]);
 
   const loadRevenueData = async () => {
     try {
