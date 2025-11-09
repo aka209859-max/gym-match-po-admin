@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "GYM MATCH PO管理者専用Webアプリ",
   "scripts": {
-    "dev": "next dev -p 3006",
+    "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start -p 3006",
+    "start": "next start -p 3000",
     "lint": "next lint"
   },
   "dependencies": {

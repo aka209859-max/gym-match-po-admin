@@ -39,16 +39,20 @@ export default function SessionsPage() {
           // Firestore Session型をUI Session型に変換
           const uiSessions: Session[] = sessionsData.map(s => ({
             id: s.id,
+            memberId: s.userId,
             memberName: s.userName,
+            trainerId: 'trainer_default',
             trainerName: 'トレーナー未設定',
-            date: s.date.toISOString().split('T')[0],
+            scheduledDate: s.date,  // Date型のまま保持
             startTime: s.date.toISOString().split('T')[1].substring(0, 5),
             endTime: s.date.toISOString().split('T')[1].substring(0, 5),
             duration: s.duration,
             type: s.type as SessionType,
             status: s.status as SessionStatus,
+            price: 8000,
             location: 'メインフロア',
-            revenue: 8000,
+            createdAt: s.date,
+            updatedAt: new Date(),
           }));
           
           setSessions(uiSessions);

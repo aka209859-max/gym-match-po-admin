@@ -44,9 +44,12 @@ export default function MembersPage() {
             phone: m.phone,
             status: m.isActive ? 'active' : 'inactive',
             contractType: m.contractType as ContractType,
-            joinDate: m.joinDate.toISOString().split('T')[0],
-            lastVisit: m.lastVisit.toISOString().split('T')[0],
+            joinDate: m.joinDate,  // Date型のまま保持
+            lastVisit: m.lastVisit,  // Date型のまま保持
             totalSessions: m.totalSessions,
+            totalRevenue: 0,  // デフォルト値
+            createdAt: m.joinDate,  // createdAtとして使用
+            updatedAt: new Date(),  // 現在時刻
           }));
           
           setMembers(uiMembers);
