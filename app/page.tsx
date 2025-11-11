@@ -36,7 +36,15 @@ export default function LoginPage() {
       console.log('✅ Firebase login successful:', {
         uid: user.uid,
         email: user.email,
+        emailVerified: user.emailVerified,
       });
+
+      // Check email verification
+      if (!user.emailVerified) {
+        setError('メールアドレスが確認されていません。登録時に送信された確認メールのリンクをクリックしてください。');
+        setIsLoading(false);
+        return;
+      }
 
       // Get ID token and custom claims
       const idTokenResult = await user.getIdTokenResult();
@@ -267,8 +275,35 @@ export default function LoginPage() {
                 パスワードを忘れた場合
               </Link>
             </div>
+
           </form>
         )}
+
+        {/* Register Link - Always visible regardless of login mode */}
+        <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+          <p className="text-sm text-gray-600 mb-2">
+            まだアカウントをお持ちでない方
+          </p>
+          <a 
+            href="/register" 
+            className="inline-flex items-center justify-center w-full py-3 px-4 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors text-base shadow-sm"
+          >
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+              />
+            </svg>
+            新規登録（無料）
+          </a>
+        </div>
 
         {/* Access Code Login Form */}
         {loginMode === 'accessCode' && (
@@ -315,37 +350,6 @@ export default function LoginPage() {
             >
               {isLoading ? 'ログイン中...' : 'ログイン'}
             </button>
-
-            {/* Demo Access Code Display */}
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="flex items-start">
-                <svg
-                  className="w-5 h-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-                <div className="text-sm text-yellow-800">
-                  <p className="font-medium mb-1">🔧 デモ用アクセスコード</p>
-                  <p className="text-yellow-700 mb-2">
-                    開発・デモ用のアクセスコードです:
-                  </p>
-                  <div className="bg-white px-3 py-2 rounded border border-yellow-300 font-mono text-base font-bold text-gray-900">
-                    GYMMATCH2024
-                  </div>
-                  <p className="text-yellow-600 text-xs mt-2">
-                    ※ 本番環境では、このセクションは削除されます
-                  </p>
-                </div>
-              </div>
-            </div>
           </form>
         )}
 

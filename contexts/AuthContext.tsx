@@ -65,31 +65,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           console.log('🚪 Firebase Auth: No user authenticated');
           
-          // Check for legacy access code authentication
-          const authenticated = localStorage.getItem('gym_match_authenticated');
-          const accessCode = localStorage.getItem('gym_match_access_code');
-          const storedGymId = localStorage.getItem('gym_match_gym_id');
-          const storedGymName = localStorage.getItem('gym_match_gym_name');
-
-          if (authenticated === 'true' && accessCode === 'GYMMATCH2024') {
-            console.log('🔑 Using legacy access code authentication');
-            setIsAuthenticated(true);
-            setGymId(storedGymId || 'gym_demo_001');
-            setGymName(storedGymName || 'GYM MATCH デモジム');
-            setUser(null);
-          } else {
-            // Clear all state
-            setUser(null);
-            setIsAuthenticated(false);
-            setGymId(null);
-            setGymName(null);
-            
-            // Clear localStorage
-            localStorage.removeItem('gym_match_authenticated');
-            localStorage.removeItem('gym_match_access_code');
-            localStorage.removeItem('gym_match_gym_id');
-            localStorage.removeItem('gym_match_gym_name');
-          }
+          // Clear all state
+          setUser(null);
+          setIsAuthenticated(false);
+          setGymId(null);
+          setGymName(null);
+          
+          // Clear localStorage
+          localStorage.removeItem('gym_match_authenticated');
+          localStorage.removeItem('gym_match_access_code');
+          localStorage.removeItem('gym_match_gym_id');
+          localStorage.removeItem('gym_match_gym_name');
         }
       } catch (error) {
         console.error('❌ Auth state change error:', error);
@@ -105,29 +91,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []); // 空の依存配列 = 初回マウント時のみ実行
 
-  // Legacy access code login (for backward compatibility)
+  // Legacy access code login (disabled in production)
   const login = (accessCode: string): boolean => {
-    if (accessCode === 'GYMMATCH2024') {
-      console.log('✅ Auth Context: Legacy access code login successful');
-      
-      // デモ用のgymId設定
-      const demoGymId = 'gym_demo_001';
-      const demoGymName = 'GYM MATCH デモジム';
-      
-      localStorage.setItem('gym_match_authenticated', 'true');
-      localStorage.setItem('gym_match_access_code', accessCode);
-      localStorage.setItem('gym_match_gym_id', demoGymId);
-      localStorage.setItem('gym_match_gym_name', demoGymName);
-      
-      setIsAuthenticated(true);
-      setGymId(demoGymId);
-      setGymName(demoGymName);
-      setUser(null); // No Firebase user for legacy login
-      
-      console.log('🏋️ Legacy Gym ID set:', demoGymId);
-      return true;
-    }
-    console.log('❌ Auth Context: Login failed - invalid code');
+    console.log('❌ Auth Context: Legacy access code login disabled');
     return false;
   };
 

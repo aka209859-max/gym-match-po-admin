@@ -59,23 +59,36 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
           },
-          // Content Security Policy (XSS対策)
+          // Content Security Policy (開発環境では緩和、本番では厳格化)
           {
             key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: https: blob:",
-              "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://api.stripe.com wss://*.firebaseio.com",
-              "frame-src 'self' https://js.stripe.com",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "frame-ancestors 'none'",
-              "upgrade-insecure-requests"
-            ].join('; ')
+            value: process.env.NODE_ENV === 'production' 
+              ? [
+                  "default-src 'self'",
+                  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com",
+                  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                  "img-src 'self' data: https: blob:",
+                  "font-src 'self' data: https://fonts.gstatic.com",
+                  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://api.stripe.com wss://*.firebaseio.com",
+                  "frame-src 'self' https://js.stripe.com",
+                  "object-src 'none'",
+                  "base-uri 'self'",
+                  "form-action 'self'",
+                  "frame-ancestors 'none'",
+                  "upgrade-insecure-requests"
+                ].join('; ')
+              : [
+                  "default-src 'self' 'unsafe-inline' 'unsafe-eval'",
+                  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com https://*.novita.ai",
+                  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                  "img-src 'self' data: https: blob:",
+                  "font-src 'self' data: https://fonts.gstatic.com",
+                  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://api.stripe.com wss://*.firebaseio.com ws://localhost:* http://localhost:*",
+                  "frame-src 'self' https://js.stripe.com",
+                  "object-src 'none'",
+                  "base-uri 'self'",
+                  "form-action 'self'"
+                ].join('; ')
           }
         ],
       },

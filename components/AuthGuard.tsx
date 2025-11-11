@@ -14,8 +14,9 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
-    // ログインページとパスワードリセットページは認証チェック不要
-    if (pathname === '/' || pathname === '/reset-password') {
+    // 認証不要ページ（公開ページ）
+    const publicPages = ['/', '/reset-password', '/register', '/verify-email'];
+    if (publicPages.includes(pathname)) {
       return;
     }
 
@@ -30,8 +31,9 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     }
   }, [isAuthenticated, isLoading, pathname, router]);
 
-  // ログインページとパスワードリセットページは常に表示
-  if (pathname === '/' || pathname === '/reset-password') {
+  // 認証不要ページは常に表示
+  const publicPages = ['/', '/reset-password', '/register', '/verify-email'];
+  if (publicPages.includes(pathname)) {
     return <>{children}</>;
   }
 
