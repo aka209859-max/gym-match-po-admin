@@ -1,0 +1,84 @@
+
+> gym-match-po-admin@1.0.0 dev
+> next dev -p 3006 -p 3008
+
+   ▲ Next.js 15.1.6
+   - Local:        http://localhost:3008
+   - Network:      http://169.254.0.21:3008
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.4s
+ ○ Compiling / ...
+ ✓ Compiled / in 5s (769 modules)
+ GET / 200 in 5961ms
+ ✓ Compiled in 930ms (320 modules)
+ ○ Compiling /members ...
+ ✓ Compiled /members in 1885ms (768 modules)
+ GET /members 200 in 1990ms
+ ✓ Compiled /bookings in 406ms (840 modules)
+ GET /bookings 200 in 497ms
+ ○ Compiling /payments ...
+ ✓ Compiled /payments in 562ms (849 modules)
+ GET /payments 200 in 608ms
+ GET /payments 200 in 276ms
+ ✓ Compiled /accounting in 339ms (868 modules)
+ GET /accounting 200 in 397ms
+ ○ Compiling /settings/accounting ...
+ ✓ Compiled /settings/accounting in 2s (875 modules)
+ GET /settings/accounting 200 in 2130ms
+ ✓ Compiled /reviews in 293ms (877 modules)
+ GET /reviews 200 in 365ms
+ GET /payments 200 in 18ms
+ ✓ Compiled in 3.5s (884 modules)
+ ⚠ Fast Refresh had to perform a full reload when ch-po-admin/app/accounting/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /payments 200 in 354ms
+ GET /payments 200 in 361ms
+ ✓ Compiled in 416ms (375 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 680ms (888 modules)
+ GET /payments 404 in 776ms
+ GET /payments 200 in 18ms
+ GET /payments 200 in 223ms
+ ✓ Compiled in 601ms (378 modules)
+ GET /payments 200 in 28ms
+ ✓ Compiled in 302ms (378 modules)
+ GET /payments 200 in 18ms
+Killed
+[Error: ENOENT: no such file or directory, stat '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/6.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/6.pack.gz'
+}
+ ⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/6.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/6.pack.gz'
+}
+ ⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/6.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/6.pack.gz'
+}
+[Error: ENOENT: no such file or directory, stat '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/11.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/11.pack.gz'
+}
+ ⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/11.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/11.pack.gz'
+}
+ ⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/11.pack.gz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/11.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat '/home/user/gym-match-po-admin/.next/cache/webpack/client-development/6.pack.gz'

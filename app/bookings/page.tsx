@@ -88,9 +88,9 @@ export default function BookingsPage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8 pt-12">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">📅 予約管理</h1>
+          <h1 className="text-3xl font-bold text-gray-900">📅 予約管理</h1>
           <button onClick={loadBookings} disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300">
             {loading ? '読込中...' : '更新'}
           </button>
@@ -100,13 +100,13 @@ export default function BookingsPage() {
           {/* Calendar & Filters */}
           <div className="space-y-4">
             <div className="bg-white rounded-lg shadow-sm p-6 border">
-              <h2 className="font-semibold mb-4">日付選択</h2>
+              <h2 className="font-semibold text-gray-900 mb-4">日付選択</h2>
               <Calendar onChange={(value) => setSelectedDate(value as Date)} value={selectedDate} locale="ja-JP" />
             </div>
 
             <div className="bg-white rounded-lg shadow-sm p-6 border">
-              <h2 className="font-semibold mb-4">ステータス</h2>
-              <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="w-full px-3 py-2 border rounded-lg">
+              <h2 className="font-semibold text-gray-900 mb-4">ステータス</h2>
+              <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="w-full px-3 py-2 border rounded-lg text-gray-900">
                 <option value="all">全て</option>
                 <option value="scheduled">予約済</option>
                 <option value="completed">完了</option>
@@ -116,14 +116,14 @@ export default function BookingsPage() {
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-sm mb-2">本日の予約</h3>
+              <h3 className="font-semibold text-gray-900 text-sm mb-2">本日の予約</h3>
               <p className="text-2xl font-bold text-blue-600">{filteredBookings.length}件</p>
             </div>
           </div>
 
           {/* Bookings List */}
           <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6 border">
-            <h2 className="font-semibold mb-4">
+            <h2 className="font-semibold text-gray-900 mb-4">
               {selectedDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })} の予約
             </h2>
 
@@ -138,16 +138,16 @@ export default function BookingsPage() {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <div className="font-semibold">{booking.memberName}</div>
-                        <div className="text-sm text-gray-600">トレーナー: {booking.trainerName}</div>
+                        <div className="text-sm text-gray-900">トレーナー: {booking.trainerName}</div>
                       </div>
                       {getStatusBadge(booking.status)}
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                    <div className="flex items-center gap-4 text-sm text-gray-900 mb-3">
                       <span>⏰ {booking.startTime.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })} - {booking.endTime.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}</span>
                       <span>📋 {booking.sessionType}</span>
                       <span>💴 ¥{booking.price.toLocaleString()}</span>
                     </div>
-                    {booking.notes && <p className="text-sm text-gray-600 mb-3">📝 {booking.notes}</p>}
+                    {booking.notes && <p className="text-sm text-gray-900 mb-3">📝 {booking.notes}</p>}
                     {booking.status === 'scheduled' && (
                       <div className="flex gap-2">
                         <button onClick={() => handleComplete(booking.id)} className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700">

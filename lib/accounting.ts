@@ -69,7 +69,8 @@ export async function getValidAccessToken(): Promise<string | null> {
       
       const refreshToken = getStoredRefreshToken();
       if (!refreshToken) {
-        console.error('❌ No refresh token available');
+        // Silently return null if no refresh token (not an error condition)
+        console.log('ℹ️ No refresh token available, user needs to reconnect');
         return null;
       }
 
@@ -79,14 +80,15 @@ export async function getValidAccessToken(): Promise<string | null> {
         console.log('✅ Access token refreshed successfully');
         accessToken = refreshResult.access_token || null;
       } else {
-        console.error('❌ Failed to refresh access token:', refreshResult.error);
+        console.log('ℹ️ Failed to refresh access token, user needs to reconnect');
         return null;
       }
     }
 
     return accessToken;
   } catch (error) {
-    console.error('❌ Error getting valid access token:', error);
+    // Silently handle errors, don't throw to console.error
+    console.log('ℹ️ Error getting valid access token:', error);
     return null;
   }
 }

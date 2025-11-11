@@ -52,9 +52,9 @@ export default function PaymentsPage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8 pt-12">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">💳 決済管理</h1>
+          <h1 className="text-3xl font-bold text-gray-900">💳 決済管理</h1>
           <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300">
             {loading ? '読込中...' : '更新'}
           </button>
@@ -64,19 +64,19 @@ export default function PaymentsPage() {
         {summary && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-white rounded-lg shadow-sm p-6 border">
-              <h3 className="text-sm text-gray-600 mb-2">総売上 (今月)</h3>
+              <h3 className="text-sm text-gray-900 mb-2">総売上 (今月)</h3>
               <p className="text-2xl font-bold text-blue-600">{formatAmount(summary.totalRevenue)}</p>
             </div>
             <div className="bg-white rounded-lg shadow-sm p-6 border">
-              <h3 className="text-sm text-gray-600 mb-2">セッション売上</h3>
+              <h3 className="text-sm text-gray-900 mb-2">セッション売上</h3>
               <p className="text-2xl font-bold text-green-600">{formatAmount(summary.sessionRevenue)}</p>
             </div>
             <div className="bg-white rounded-lg shadow-sm p-6 border">
-              <h3 className="text-sm text-gray-600 mb-2">会費売上</h3>
+              <h3 className="text-sm text-gray-900 mb-2">会費売上</h3>
               <p className="text-2xl font-bold text-purple-600">{formatAmount(summary.membershipRevenue)}</p>
             </div>
             <div className="bg-white rounded-lg shadow-sm p-6 border">
-              <h3 className="text-sm text-gray-600 mb-2">取引件数</h3>
+              <h3 className="text-sm text-gray-900 mb-2">取引件数</h3>
               <p className="text-2xl font-bold text-gray-900">{summary.transactionCount}件</p>
             </div>
           </div>
@@ -101,8 +101,8 @@ export default function PaymentsPage() {
 
         {/* Payments List */}
         <div className="bg-white rounded-lg shadow-sm border">
-          <div className="p-6">
-            <h2 className="text-lg font-semibold mb-4">決済履歴</h2>
+          <div className="p-6 pt-12">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">決済履歴</h2>
             {loading ? (
               <div className="text-center py-8">読込中...</div>
             ) : filteredPayments.length === 0 ? (
@@ -112,12 +112,12 @@ export default function PaymentsPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4">日時</th>
-                      <th className="text-left py-3 px-4">会員名</th>
-                      <th className="text-left py-3 px-4">種類</th>
-                      <th className="text-left py-3 px-4">金額</th>
-                      <th className="text-left py-3 px-4">ステータス</th>
-                      <th className="text-left py-3 px-4">説明</th>
+                      <th className="text-left py-3 px-4 text-gray-900">日時</th>
+                      <th className="text-left py-3 px-4 text-gray-900">会員名</th>
+                      <th className="text-left py-3 px-4 text-gray-900">種類</th>
+                      <th className="text-left py-3 px-4 text-gray-900">金額</th>
+                      <th className="text-left py-3 px-4 text-gray-900">ステータス</th>
+                      <th className="text-left py-3 px-4 text-gray-900">説明</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -138,7 +138,7 @@ export default function PaymentsPage() {
                         </td>
                         <td className="py-3 px-4 font-semibold">{formatAmount(payment.amount)}</td>
                         <td className="py-3 px-4">{getStatusBadge(payment.status)}</td>
-                        <td className="py-3 px-4 text-sm text-gray-600">{payment.description}</td>
+                        <td className="py-3 px-4 text-sm text-gray-900">{payment.description}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -150,7 +150,7 @@ export default function PaymentsPage() {
 
         {/* Info Box */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-          <h3 className="font-semibold mb-2">💡 決済システムについて</h3>
+          <h3 className="font-semibold text-gray-900 mb-2">💡 決済システムについて</h3>
           <ul className="text-sm text-gray-700 space-y-1">
             <li>• Stripe連携で安全な決済処理</li>
             <li>• セッション料金の自動徴収</li>

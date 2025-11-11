@@ -228,12 +228,12 @@ export default function ExportPage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8 pt-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
             データエクスポート
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-900 mt-2">
             会員データ、セッションデータ、売上データを無制限にエクスポートできます
           </p>
         </div>
@@ -280,7 +280,7 @@ export default function ExportPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">会員データ</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-900 mt-1">
                 全会員の情報をエクスポート ({members.length > 0 ? `${members.length}名` : 'デモデータ'})
               </p>
             </div>
@@ -303,7 +303,7 @@ export default function ExportPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">セッションデータ</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-900 mt-1">
                 全セッション履歴をエクスポート ({sessions.length > 0 ? `${sessions.length}件` : 'デモデータ'})
               </p>
             </div>
@@ -331,7 +331,7 @@ export default function ExportPage() {
                   onChange={(e) =>
                     setDateRange({ ...dateRange, start: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div className="flex-1">
@@ -344,7 +344,7 @@ export default function ExportPage() {
                   onChange={(e) =>
                     setDateRange({ ...dateRange, end: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -362,7 +362,7 @@ export default function ExportPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">売上データ</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-gray-900 mt-1">
                 月次売上集計をエクスポート
               </p>
             </div>
@@ -380,27 +380,73 @@ export default function ExportPage() {
           </div>
         </div>
 
-        {/* Competitive Advantage Notice */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
-          <div className="flex items-start gap-4">
-            <div className="text-3xl">🏆</div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                競合優位性: 無制限データエクスポート
-              </h3>
-              <p className="text-gray-700 mb-2">
-                hacomonoでは過去1ヶ月分のデータしかエクスポートできませんが、
-                <strong className="text-blue-600">
-                  GYM MATCH Managerでは全期間のデータを無制限にエクスポート可能
-                </strong>
-                です。
+        {/* 🏆 データエクスポート機能の強み */}
+        <div className="bg-gradient-to-r from-green-50 via-blue-50 to-indigo-50 rounded-xl shadow-lg p-8 border-2 border-blue-300">
+          <div className="flex items-start gap-6">
+            <div className="text-6xl">📊</div>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-4">
+                <h3 className="text-2xl font-bold text-gray-900">
+                  無制限データエクスポート
+                </h3>
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
+                  GYM MATCH Manager の強み
+                </span>
+              </div>
+              
+              <p className="text-gray-700 mb-6 text-lg">
+                <strong className="text-blue-600">GYM MATCH Manager</strong>では、全期間のデータを無制限にエクスポート可能です。
               </p>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>✅ データ主権を完全に保持</li>
-                <li>✅ 長期的なデータ分析が可能</li>
-                <li>✅ 他システムへの移行も容易</li>
-                <li>✅ CSV、Excel、JSON形式に対応</li>
-              </ul>
+
+              {/* メリット一覧 */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="font-semibold text-gray-900">データ主権完全保持</span>
+                  </div>
+                  <p className="text-sm text-gray-900">あなたのデータは100%あなたのもの</p>
+                </div>
+
+                <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span className="font-semibold text-gray-900">長期トレンド分析</span>
+                  </div>
+                  <p className="text-sm text-gray-900">5年前からのデータも分析可能</p>
+                </div>
+
+                <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span className="font-semibold text-gray-900">システム移行容易</span>
+                  </div>
+                  <p className="text-sm text-gray-900">ロックインなし、自由な移行</p>
+                </div>
+
+                <div className="bg-white rounded-lg p-4 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="font-semibold text-gray-900">多様なフォーマット</span>
+                  </div>
+                  <p className="text-sm text-gray-900">CSV、Excel、JSON対応</p>
+                </div>
+              </div>
+
+              {/* 強調メッセージ */}
+              <div className="mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-4 text-white">
+                <p className="text-center font-bold text-lg">
+                  🚀 過去全データの分析で、長期的な経営判断をサポート！
+                </p>
+              </div>
             </div>
           </div>
         </div>

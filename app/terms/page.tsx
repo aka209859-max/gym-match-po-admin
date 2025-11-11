@@ -11,7 +11,7 @@ export default function TermsPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             利用規約・契約条件
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-900">
             透明性の高い契約で、安心してご利用いただけます
           </p>
         </div>

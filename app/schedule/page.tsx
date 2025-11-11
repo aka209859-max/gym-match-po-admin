@@ -112,13 +112,13 @@ export default function SchedulePage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8 pt-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">📅 スケジュール管理</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendar */}
           <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-            <h2 className="text-lg font-semibold mb-4">日付選択</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">日付選択</h2>
             <Calendar onChange={(value) => setSelectedDate(value as Date)} value={selectedDate} locale="ja-JP" />
             
             <div className="mt-4">
@@ -126,7 +126,7 @@ export default function SchedulePage() {
               <select
                 value={selectedTrainer}
                 onChange={(e) => setSelectedTrainer(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               >
                 {trainers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
@@ -136,7 +136,7 @@ export default function SchedulePage() {
           {/* Time Slots */}
           <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">
+              <h2 className="text-lg font-semibold text-gray-900">
                 {selectedDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}
               </h2>
               <button onClick={loadSchedule} disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300">
@@ -169,7 +169,7 @@ export default function SchedulePage() {
                         <div>
                           <span className="font-medium">{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</span>
                           {booking && (
-                            <div className="text-sm text-gray-600 mt-1">
+                            <div className="text-sm text-gray-900 mt-1">
                               {booking.memberName} | {booking.sessionType}
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleCancelBooking(booking.id); }}
@@ -198,8 +198,8 @@ export default function SchedulePage() {
         {showBookingModal && selectedSlot && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h3 className="text-lg font-semibold mb-4">クイック予約</h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">クイック予約</h3>
+              <p className="text-sm text-gray-900 mb-4">
                 {formatTime(selectedSlot.startTime)} - {formatTime(selectedSlot.endTime)}
               </p>
               <p className="text-sm text-gray-500 mb-4">

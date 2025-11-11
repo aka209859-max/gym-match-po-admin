@@ -238,11 +238,11 @@ export default function ReviewsPage() {
 
   return (
     <AdminLayout>
-      <div className="p-8">
+      <div className="p-8 pt-12">
         {/* ヘッダー */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">レビュー管理</h1>
-          <p className="text-gray-600">会員からのレビューを管理し、返信を行います。</p>
+          <p className="text-gray-900">会員からのレビューを管理し、返信を行います。</p>
         </div>
 
         {/* 統計カード */}
@@ -331,7 +331,7 @@ export default function ReviewsPage() {
                       </div>
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-gray-600 w-16 text-right">
+                  <span className="text-sm font-medium text-gray-900 w-16 text-right">
                     {percentage.toFixed(0)}%
                   </span>
                 </div>
@@ -398,7 +398,7 @@ export default function ReviewsPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">レビューが見つかりません</h3>
-              <p className="text-gray-600">フィルター条件を変更してお試しください。</p>
+              <p className="text-gray-900">フィルター条件を変更してお試しください。</p>
             </div>
           ) : (
             filteredReviews.map((review) => (
@@ -412,7 +412,7 @@ export default function ReviewsPage() {
                       </div>
                       <div>
                         <h3 className="font-bold text-gray-900 text-lg">{review.memberName}</h3>
-                        <p className="text-sm text-gray-600">担当: {review.trainerName}</p>
+                        <p className="text-sm text-gray-900">担当: {review.trainerName}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -426,7 +426,7 @@ export default function ReviewsPage() {
                 </div>
 
                 {/* レビュー内容 */}
-                <div className="p-6">
+                <div className="p-6 pt-12">
                   <p className="text-gray-700 leading-relaxed mb-6">{review.comment}</p>
 
                   {/* 返信表示 */}
@@ -527,7 +527,7 @@ export default function ReviewsPage() {
 
         {/* 表示件数 */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-900">
             {filteredReviews.length} 件のレビューを表示中
             {(filterRating !== 'all' || filterStatus !== 'all' || selectedTrainer !== 'all') && (
               <span className="ml-2">

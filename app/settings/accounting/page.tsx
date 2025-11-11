@@ -226,10 +226,10 @@ export default function AccountingSettingsPage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto px-8 pt-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">会計ソフト連携</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-900 mt-2">
             freeeまたはMFクラウドと連携して売上を自動で仕訳できます
           </p>
         </div>
@@ -251,7 +251,7 @@ export default function AccountingSettingsPage() {
                     : 'MFクラウド会計'}
                   と連携されています
                 </p>
-                <div className="space-y-2 text-sm text-gray-600">
+                <div className="space-y-2 text-sm text-gray-900">
                   <p>
                     <strong>会社名:</strong>{' '}
                     {connectionStatus.companyName || '取得中...'}
@@ -311,7 +311,7 @@ export default function AccountingSettingsPage() {
                   <h3 className="font-semibold text-gray-900 mb-1">
                     freee会計
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-900">
                     クラウド会計シェアNo.1
                   </p>
                   {selectedSoftware === 'freee' && (
@@ -338,7 +338,7 @@ export default function AccountingSettingsPage() {
                   <h3 className="font-semibold text-gray-900 mb-1">
                     MFクラウド会計
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-900">
                     マネーフォワード提供
                   </p>
                   {selectedSoftware === 'mfcloud' && (
@@ -376,7 +376,7 @@ export default function AccountingSettingsPage() {
                   <h3 className="font-medium text-gray-900">
                     セッション完了時に自動仕訳
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-900 mt-1">
                     セッションが完了したら自動的に売上を仕訳します
                   </p>
                 </div>
@@ -403,7 +403,7 @@ export default function AccountingSettingsPage() {
                     <strong>摘要:</strong>{' '}
                     パーソナルトレーニング売上（会員名）
                   </p>
-                  <p className="text-gray-600 mt-2">
+                  <p className="text-gray-900 mt-2">
                     ※ 勘定科目は会計ソフト側で自動マッピングされます
                   </p>
                 </div>
@@ -443,7 +443,7 @@ export default function AccountingSettingsPage() {
                 </strong>
                 できます。
               </p>
-              <ul className="text-sm text-gray-600 space-y-1">
+              <ul className="text-sm text-gray-900 space-y-1">
                 <li>✅ 経理工数50%削減 (月10時間 = 5万円節約)</li>
                 <li>✅ 手作業ミスをゼロに</li>
                 <li>✅ リアルタイムで売上把握</li>

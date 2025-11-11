@@ -22,11 +22,11 @@ export default function PermissionsPage() {
 
   return (
     <AdminLayout>
-      <div className="p-8">
+      <div className="p-8 pt-12">
         {/* ヘッダー */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800">権限管理</h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-900">
             ロールベースアクセス制御（RBAC）権限マトリクス
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function PermissionsPage() {
                   <span className="text-blue-500">✓</span>
                 )}
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-900">
                 {ROLE_DESCRIPTIONS[role]}
               </p>
             </div>
@@ -169,7 +169,7 @@ export default function PermissionsPage() {
                                 {permissions.map((permission) => (
                                   <span
                                     key={permission}
-                                    className="text-xs text-gray-600"
+                                    className="text-xs text-gray-900"
                                   >
                                     {PERMISSION_LABELS[permission]}
                                   </span>

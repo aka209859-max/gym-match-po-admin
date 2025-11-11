@@ -1,73 +1,35 @@
-
-> gym-match-po-admin@1.0.0 dev
-> next dev -p 3000
-
    [1m[38;2;173;127;168m▲ Next.js 15.1.6[39m[22m
-   - Local:        http://localhost:3000
-   - Network:      http://169.254.0.21:3000
+   - Local:        http://localhost:3009
+   - Network:      http://169.254.0.21:3009
    - Environments: .env.local
 
  [32m[1m✓[22m[39m Starting...
- [32m[1m✓[22m[39m Ready in 1807ms
+ [32m[1m✓[22m[39m Ready in 1671ms
  [37m[1m○[22m[39m Compiling / ...
- [32m[1m✓[22m[39m Compiled / in 3.7s (769 modules)
- GET / [32m200[39m in 5066ms
- [32m[1m✓[22m[39m Compiled in 1310ms (320 modules)
- [37m[1m○[22m[39m Compiling /members ...
- [32m[1m✓[22m[39m Compiled /members in 900ms (768 modules)
- GET /members [32m200[39m in 995ms
- GET / [32m200[39m in 49ms
- GET / [32m200[39m in 13ms
- GET /members [32m200[39m in 13ms
- GET /members [32m200[39m in 318ms
- GET / [32m200[39m in 17ms
- GET / [32m200[39m in 14ms
- GET /members [32m200[39m in 13ms
- GET / [32m200[39m in 15ms
- GET / [32m200[39m in 15ms
- [37m[1m○[22m[39m Compiling /reset-password ...
- [32m[1m✓[22m[39m Compiled /reset-password in 1533ms (775 modules)
- GET /reset-password [32m200[39m in 1613ms
- GET /reset-password [32m200[39m in 10ms
- GET /reset-password [32m200[39m in 9ms
- GET / [32m200[39m in 14ms
- GET /reset-password [32m200[39m in 17ms
- GET / [32m200[39m in 14ms
- GET / [32m200[39m in 336ms
- GET / [32m200[39m in 37ms
- GET /members [32m200[39m in 21ms
- [32m[1m✓[22m[39m Compiled in 446ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 486ms (789 modules)
- [32m[1m✓[22m[39m Compiled in 375ms (789 modules)
- [32m[1m✓[22m[39m Compiled in 388ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 327ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 196ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 618ms (789 modules)
- [32m[1m✓[22m[39m Compiled in 614ms (789 modules)
- [32m[1m✓[22m[39m Compiled in 751ms (775 modules)
- [32m[1m✓[22m[39m Compiled in 347ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 681ms (775 modules)
- [32m[1m✓[22m[39m Compiled in 445ms (789 modules)
- [32m[1m✓[22m[39m Compiled in 288ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 215ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 555ms (775 modules)
- [32m[1m✓[22m[39m Compiled in 310ms (789 modules)
- [32m[1m✓[22m[39m Compiled in 381ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 581ms (775 modules)
- [32m[1m✓[22m[39m Compiled in 404ms (789 modules)
- GET /members [32m200[39m in 401ms
- [37m[1m○[22m[39m Compiling /_not-found ...
- [32m[1m✓[22m[39m Compiled /_not-found in 691ms (779 modules)
- GET /_next/static/chunks/app-pages-internals.js [33m404[39m in 1101ms
- GET /_next/static/chunks/main-app.js?v=1762691490720 [33m404[39m in 1100ms
- [32m[1m✓[22m[39m Compiled in 386ms (327 modules)
- [32m[1m✓[22m[39m Compiled in 415ms (789 modules)
- [32m[1m✓[22m[39m Compiled in 475ms (789 modules)
- [32m[1m✓[22m[39m Compiled in 904ms (789 modules)
- [31m[1m⨯[22m[39m [TypeError: Cannot read properties of undefined (reading 'bind')] {
-  page: '/members'
-}
- [37m[1m○[22m[39m Compiling /_error ...
- [32m[1m✓[22m[39m Compiled /_error in 2.6s (1017 modules)
- GET /members [31m500[39m in 4343ms
-[?25h
+ [32m[1m✓[22m[39m Compiled / in 3s (769 modules)
+ GET / [32m200[39m in 3810ms
+ [32m[1m✓[22m[39m Compiled in 854ms (320 modules)
+ [32m[1m✓[22m[39m Compiled /members in 457ms (768 modules)
+ GET /members [32m200[39m in 539ms
+ [37m[1m○[22m[39m Compiling /bookings ...
+ [32m[1m✓[22m[39m Compiled /bookings in 1059ms (840 modules)
+ GET /bookings [32m200[39m in 1156ms
+ [32m[1m✓[22m[39m Compiled /payments in 238ms (849 modules)
+ GET /payments [32m200[39m in 310ms
+ [37m[1m○[22m[39m Compiling /revenue ...
+ [32m[1m✓[22m[39m Compiled /revenue in 1113ms (864 modules)
+ GET /revenue [32m200[39m in 1176ms
+ [37m[1m○[22m[39m Compiling /export ...
+ [32m[1m✓[22m[39m Compiled /export in 580ms (879 modules)
+ GET /export [32m200[39m in 657ms
+ [32m[1m✓[22m[39m Compiled /accounting in 437ms (898 modules)
+ GET /accounting [32m200[39m in 485ms
+ [32m[1m✓[22m[39m Compiled in 650ms (887 modules)
+ [32m[1m✓[22m[39m Compiled in 1290ms (901 modules)
+ GET /accounting [32m200[39m in 91ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/accounting/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /accounting [32m200[39m in 291ms
+ [32m[1m✓[22m[39m Compiled in 599ms (887 modules)
+ GET /accounting [32m200[39m in 78ms
+ [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /accounting [32m200[39m in 229ms

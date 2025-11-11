@@ -128,11 +128,11 @@ export default function MembersPage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6 pt-12">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">会員管理</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-900 mt-2">
             会員情報の閲覧・管理を行います
           </p>
         </div>
@@ -142,7 +142,7 @@ export default function MembersPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">全会員</p>
+                <p className="text-sm font-medium text-gray-900">全会員</p>
                 <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
               </div>
               <div className="text-4xl">👥</div>
@@ -152,7 +152,7 @@ export default function MembersPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">有効会員</p>
+                <p className="text-sm font-medium text-gray-900">有効会員</p>
                 <p className="text-3xl font-bold text-green-600 mt-1">{stats.active}</p>
               </div>
               <div className="text-4xl">✅</div>
@@ -162,7 +162,7 @@ export default function MembersPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">休会中</p>
+                <p className="text-sm font-medium text-gray-900">休会中</p>
                 <p className="text-3xl font-bold text-yellow-600 mt-1">{stats.inactive}</p>
               </div>
               <div className="text-4xl">⏸️</div>
@@ -172,7 +172,7 @@ export default function MembersPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">体験会員</p>
+                <p className="text-sm font-medium text-gray-900">体験会員</p>
                 <p className="text-3xl font-bold text-blue-600 mt-1">{stats.trial}</p>
               </div>
               <div className="text-4xl">🆕</div>
@@ -182,7 +182,7 @@ export default function MembersPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">期限間近</p>
+                <p className="text-sm font-medium text-gray-900">期限間近</p>
                 <p className="text-3xl font-bold text-orange-600 mt-1">{stats.expiringSoon}</p>
               </div>
               <div className="text-4xl">⚠️</div>
@@ -249,7 +249,7 @@ export default function MembersPage() {
           {/* Active Filters Display */}
           {(selectedStatus !== 'all' || selectedContractType !== 'all' || searchQuery) && (
             <div className="mt-4 flex items-center gap-2">
-              <span className="text-sm text-gray-600">フィルター適用中:</span>
+              <span className="text-sm text-gray-900">フィルター適用中:</span>
               {selectedStatus !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
                   {MEMBER_STATUS_LABELS[selectedStatus]}
@@ -302,7 +302,7 @@ export default function MembersPage() {
           {filteredMembers.length === 0 ? (
             <div className="p-12 text-center">
               <div className="text-6xl mb-4">👥</div>
-              <p className="text-gray-600 text-lg">会員が見つかりません</p>
+              <p className="text-gray-900 text-lg">会員が見つかりません</p>
               <p className="text-gray-500 text-sm mt-2">
                 フィルター条件を変更してください
               </p>
@@ -361,10 +361,10 @@ function MemberRow({ member }: { member: Member }) {
               <h3 className="font-semibold text-gray-900 text-lg mb-1">
                 {member.name}
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-900 text-sm">
                 {member.email}
               </p>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-900 text-sm">
                 {member.phone}
               </p>
             </div>
@@ -373,11 +373,11 @@ function MemberRow({ member }: { member: Member }) {
               <p className="text-gray-900 font-medium mb-1">
                 入会日: {formatMemberDate(member.joinDate)}
               </p>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-900 text-sm">
                 在籍期間: {membershipMonths}ヶ月
               </p>
               {member.expiryDate && (
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-900 text-sm">
                   有効期限: {formatMemberDate(member.expiryDate)}
                 </p>
               )}
@@ -390,17 +390,17 @@ function MemberRow({ member }: { member: Member }) {
               <p className={`text-sm ${activityStatus.color}`}>
                 {activityStatus.text}
               </p>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-900 text-sm">
                 総セッション数: {member.totalSessions}回
               </p>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-900 text-sm">
                 累計売上: ¥{member.totalRevenue.toLocaleString()}
               </p>
             </div>
           </div>
 
           {member.notes && (
-            <p className="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+            <p className="mt-3 text-sm text-gray-900 bg-gray-50 p-3 rounded">
               メモ: {member.notes}
             </p>
           )}
@@ -411,7 +411,7 @@ function MemberRow({ member }: { member: Member }) {
           <button className="px-4 py-2 text-sm text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
             詳細
           </button>
-          <button className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          <button className="px-4 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
             編集
           </button>
         </div>

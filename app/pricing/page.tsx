@@ -12,19 +12,19 @@ export default function PricingPage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto py-12 px-4">
+      <div className="max-w-7xl mx-auto px-8 pt-12">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             シンプルで透明性の高い料金プラン
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="text-xl text-gray-900 mb-8">
             ロックインなし・いつでも解約可能・データは完全にあなたのもの
           </p>
 
           {/* Billing Cycle Toggle */}
           <div className="flex justify-center items-center gap-4 mb-8">
-            <span className={`text-lg ${billingCycle === 'monthly' ? 'font-bold text-blue-600' : 'text-gray-600'}`}>
+            <span className={`text-lg ${billingCycle === 'monthly' ? 'font-bold text-blue-600' : 'text-gray-900'}`}>
               月額払い
             </span>
             <button
@@ -37,7 +37,7 @@ export default function PricingPage() {
                 }`}
               />
             </button>
-            <span className={`text-lg ${billingCycle === 'annual' ? 'font-bold text-blue-600' : 'text-gray-600'}`}>
+            <span className={`text-lg ${billingCycle === 'annual' ? 'font-bold text-blue-600' : 'text-gray-900'}`}>
               年額払い
             </span>
             {billingCycle === 'annual' && (
@@ -54,7 +54,7 @@ export default function PricingPage() {
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-6">
               <h2 className="text-3xl font-bold mb-2">GYM MATCH Manager</h2>
-              <p className="text-blue-100">オールインワンジム管理システム</p>
+              <p className="text-white">オールインワンジム管理システム</p>
             </div>
 
             {/* Price */}
@@ -63,10 +63,10 @@ export default function PricingPage() {
                 <span className="text-5xl font-bold text-gray-900">
                   ¥{billingCycle === 'monthly' ? monthlyPrice.toLocaleString() : annualMonthlyPrice.toLocaleString()}
                 </span>
-                <span className="text-xl text-gray-600">/月</span>
+                <span className="text-xl text-gray-900">/月</span>
               </div>
               {billingCycle === 'annual' && (
-                <p className="text-center text-gray-600 mt-2">
+                <p className="text-center text-gray-900 mt-2">
                   年額 ¥{annualPrice.toLocaleString()}（一括払い）
                 </p>
               )}
@@ -93,7 +93,7 @@ export default function PricingPage() {
                     <span className="text-2xl">{feature.icon}</span>
                     <div>
                       <p className="font-semibold text-gray-900">{feature.title}</p>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
+                      <p className="text-sm text-gray-900">{feature.description}</p>
                     </div>
                   </div>
                 ))}
@@ -103,7 +103,7 @@ export default function PricingPage() {
               <button className="w-full bg-blue-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition-colors">
                 14日間無料トライアルを始める
               </button>
-              <p className="text-center text-gray-600 text-sm mt-4">
+              <p className="text-center text-gray-900 text-sm mt-4">
                 クレジットカード登録不要・自動課金なし
               </p>
             </div>
@@ -200,7 +200,7 @@ export default function PricingPage() {
             <h3 className="text-3xl font-bold mb-4">
               今すぐ無料で始める
             </h3>
-            <p className="text-xl mb-6 text-blue-100">
+            <p className="text-xl mb-6 text-white">
               クレジットカード不要・14日間完全無料
             </p>
             <button className="bg-white text-blue-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-50 transition-colors">

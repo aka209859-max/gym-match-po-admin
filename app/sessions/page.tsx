@@ -133,11 +133,11 @@ export default function SessionsPage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8 pt-12">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">セッション管理</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-900 mt-2">
             トレーニングセッションの予約・管理を行います
           </p>
         </div>
@@ -147,7 +147,7 @@ export default function SessionsPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">全セッション</p>
+                <p className="text-sm font-medium text-gray-900">全セッション</p>
                 <p className="text-3xl font-bold text-gray-900 mt-1">{stats.total}</p>
               </div>
               <div className="text-4xl">📅</div>
@@ -157,7 +157,7 @@ export default function SessionsPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">本日</p>
+                <p className="text-sm font-medium text-gray-900">本日</p>
                 <p className="text-3xl font-bold text-blue-600 mt-1">{stats.today}</p>
               </div>
               <div className="text-4xl">📍</div>
@@ -167,7 +167,7 @@ export default function SessionsPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">今後の予定</p>
+                <p className="text-sm font-medium text-gray-900">今後の予定</p>
                 <p className="text-3xl font-bold text-green-600 mt-1">{stats.upcoming}</p>
               </div>
               <div className="text-4xl">⏰</div>
@@ -177,8 +177,8 @@ export default function SessionsPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">完了</p>
-                <p className="text-3xl font-bold text-gray-600 mt-1">{stats.completed}</p>
+                <p className="text-sm font-medium text-gray-900">完了</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.completed}</p>
               </div>
               <div className="text-4xl">✅</div>
             </div>
@@ -244,7 +244,7 @@ export default function SessionsPage() {
           {/* Active Filters Display */}
           {(selectedStatus !== 'all' || selectedType !== 'all' || searchQuery) && (
             <div className="mt-4 flex items-center gap-2">
-              <span className="text-sm text-gray-600">フィルター適用中:</span>
+              <span className="text-sm text-gray-900">フィルター適用中:</span>
               {selectedStatus !== 'all' && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
                   {SESSION_STATUS_LABELS[selectedStatus]}
@@ -297,7 +297,7 @@ export default function SessionsPage() {
           {filteredSessions.length === 0 ? (
             <div className="p-12 text-center">
               <div className="text-6xl mb-4">📅</div>
-              <p className="text-gray-600 text-lg">セッションが見つかりません</p>
+              <p className="text-gray-900 text-lg">セッションが見つかりません</p>
               <p className="text-gray-500 text-sm mt-2">
                 フィルター条件を変更してください
               </p>
@@ -357,7 +357,7 @@ function SessionRow({ session }: { session: Session }) {
               <h3 className="font-semibold text-gray-900 text-lg mb-1">
                 {session.memberName}
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-900 text-sm">
                 トレーナー: {session.trainerName}
               </p>
             </div>
@@ -366,13 +366,13 @@ function SessionRow({ session }: { session: Session }) {
               <p className="text-gray-900 font-medium">
                 {formatSessionDate(session.scheduledDate)}
               </p>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-900 text-sm">
                 {formatSessionTime(session.startTime, session.endTime)} ({session.duration}分)
               </p>
             </div>
           </div>
 
-          <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+          <div className="mt-3 flex items-center gap-4 text-sm text-gray-900">
             <span className="flex items-center gap-1">
               📍 {session.location}
             </span>
@@ -382,7 +382,7 @@ function SessionRow({ session }: { session: Session }) {
           </div>
 
           {session.notes && (
-            <p className="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+            <p className="mt-3 text-sm text-gray-900 bg-gray-50 p-3 rounded">
               メモ: {session.notes}
             </p>
           )}
@@ -396,7 +396,7 @@ function SessionRow({ session }: { session: Session }) {
           >
             詳細
           </button>
-          <button className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          <button className="px-4 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
             編集
           </button>
         </div>

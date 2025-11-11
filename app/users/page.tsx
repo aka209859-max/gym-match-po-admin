@@ -285,12 +285,12 @@ export default function UsersPage() {
 
   return (
     <AdminLayout>
-      <div className="p-8">
+      <div className="p-8 pt-12">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">ユーザー管理</h1>
-            <p className="text-gray-600 mt-1">スタッフ・トレーナーの登録と権限管理</p>
+            <p className="text-gray-900 mt-1">スタッフ・トレーナーの登録と権限管理</p>
           </div>
           <button
             onClick={openCreateModal}
@@ -319,7 +319,7 @@ export default function UsersPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="名前またはメールアドレスで検索"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div>
@@ -329,7 +329,7 @@ export default function UsersPage() {
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value as UserRole | 'all')}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="all">すべて</option>
                 <option value="owner">オーナー</option>
@@ -346,10 +346,10 @@ export default function UsersPage() {
           {isLoading ? (
             <div className="p-8 text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-gray-600 mt-4">読み込み中...</p>
+              <p className="text-gray-900 mt-4">読み込み中...</p>
             </div>
           ) : filteredUsers.length === 0 ? (
-            <div className="p-8 text-center text-gray-600">
+            <div className="p-8 text-center text-gray-900">
               ユーザーが見つかりません。
             </div>
           ) : (
@@ -419,7 +419,7 @@ export default function UsersPage() {
         </div>
 
         {/* User count */}
-        <div className="mt-4 text-sm text-gray-600">
+        <div className="mt-4 text-sm text-gray-900">
           全{filteredUsers.length}件のユーザー
         </div>
       </div>
@@ -428,7 +428,7 @@ export default function UsersPage() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
               {isEditMode ? 'ユーザー編集' : '新規ユーザー追加'}
             </h2>
 
@@ -448,7 +448,7 @@ export default function UsersPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={isEditMode}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
                   placeholder="user@example.com"
                 />
               </div>
@@ -461,7 +461,7 @@ export default function UsersPage() {
                   type="text"
                   value={formData.displayName}
                   onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="山田太郎"
                 />
               </div>
@@ -475,7 +475,7 @@ export default function UsersPage() {
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="6文字以上"
                   />
                 </div>
@@ -488,7 +488,7 @@ export default function UsersPage() {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as UserRole })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="staff">スタッフ</option>
                   <option value="trainer">トレーナー</option>
@@ -525,7 +525,7 @@ export default function UsersPage() {
       {deleteConfirmUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">ユーザー削除確認</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">ユーザー削除確認</h2>
             <p className="text-gray-700 mb-6">
               <strong>{deleteConfirmUser.displayName}</strong> を削除してもよろしいですか？
               <br />

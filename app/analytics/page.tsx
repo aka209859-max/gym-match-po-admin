@@ -334,12 +334,12 @@ export default function AnalyticsPage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8 pt-12">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">分析・レポート</h1>
-              <p className="text-gray-600 mt-1">ジム運営データの可視化と分析</p>
+              <p className="text-gray-900 mt-1">ジム運営データの可視化と分析</p>
             </div>
             <div className="flex gap-3">
               {/* Period Filter */}
@@ -378,7 +378,7 @@ export default function AnalyticsPage() {
             <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">総会員数</p>
+                  <p className="text-sm text-gray-900 font-medium">総会員数</p>
                   <p className="text-3xl font-bold text-gray-900 mt-2">{analyticsData.totalMembers}</p>
                   {analyticsData.recentGrowth.newMembers > 0 && (
                     <p className="text-sm text-green-600 mt-1">+{analyticsData.recentGrowth.newMembers} 新規（30日）</p>
@@ -396,7 +396,7 @@ export default function AnalyticsPage() {
             <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">総セッション数</p>
+                  <p className="text-sm text-gray-900 font-medium">総セッション数</p>
                   <p className="text-3xl font-bold text-gray-900 mt-2">{analyticsData.totalSessions}</p>
                   {analyticsData.recentGrowth.newSessions > 0 && (
                     <p className="text-sm text-green-600 mt-1">+{analyticsData.recentGrowth.newSessions} 新規（30日）</p>
@@ -414,7 +414,7 @@ export default function AnalyticsPage() {
             <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">会員あたり平均</p>
+                  <p className="text-sm text-gray-900 font-medium">会員あたり平均</p>
                   <p className="text-3xl font-bold text-gray-900 mt-2">{analyticsData.averageSessionsPerMember}</p>
                   <p className="text-sm text-gray-500 mt-1">セッション / 会員</p>
                 </div>
@@ -430,7 +430,7 @@ export default function AnalyticsPage() {
             <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">完了率</p>
+                  <p className="text-sm text-gray-900 font-medium">完了率</p>
                   <p className="text-3xl font-bold text-gray-900 mt-2">
                     {analyticsData.totalSessions > 0
                       ? Math.round(
@@ -495,9 +495,9 @@ export default function AnalyticsPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">契約タイプ</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">会員数</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">割合</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">契約タイプ</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">会員数</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">割合</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -531,9 +531,9 @@ export default function AnalyticsPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">タイプ</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">件数</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">割合</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">タイプ</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">件数</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">割合</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">

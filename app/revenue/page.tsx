@@ -40,7 +40,16 @@ interface RevenueData {
   monthlyRevenueGrowth: number;
   monthlyRevenueTrend: { month: string; revenue: number }[];
   sessionTypeRevenue: { personal: number; group: number; trial: number; consultation: number };
-  trainerPerformance: { name: string; sessions: number; revenue: number; utilizationRate: number }[];
+  trainerPerformance: { 
+    name: string; 
+    sessions: number; 
+    revenue: number; 
+    utilizationRate: number;
+    efficiencyScore: number;  // 新規: 効率性スコア (売上/セッション数)
+    monthlyGrowth: number;     // 新規: 月次成長率 (%)
+    speciality: string;        // 新規: 得意分野
+  }[];
+  topPerformers: { name: string; revenue: number; badge: string }[];  // 新規: TOP3
 }
 
 export default function RevenuePage() {
@@ -86,13 +95,60 @@ export default function RevenuePage() {
         consultation: 140000, // カウンセリング
       };
 
-      // トレーナー別パフォーマンス
+      // トレーナー別パフォーマンス（拡張版）
       const trainerPerformance = [
-        { name: '田中 健太', sessions: 85, revenue: 1530000, utilizationRate: 92 },
-        { name: '佐藤 美咲', sessions: 78, revenue: 1404000, utilizationRate: 87 },
-        { name: '鈴木 大輔', sessions: 72, revenue: 1296000, utilizationRate: 82 },
-        { name: '高橋 愛', sessions: 65, revenue: 1170000, utilizationRate: 76 },
-        { name: '渡辺 翔太', sessions: 52, revenue: 936000, utilizationRate: 68 },
+        { 
+          name: '田中 健太', 
+          sessions: 85, 
+          revenue: 1530000, 
+          utilizationRate: 92,
+          efficiencyScore: 18000,  // 1530000 / 85
+          monthlyGrowth: 12.5,
+          speciality: 'パーソナル'
+        },
+        { 
+          name: '佐藤 美咲', 
+          sessions: 78, 
+          revenue: 1404000, 
+          utilizationRate: 87,
+          efficiencyScore: 18000,
+          monthlyGrowth: 8.3,
+          speciality: 'グループ'
+        },
+        { 
+          name: '鈴木 大輔', 
+          sessions: 72, 
+          revenue: 1296000, 
+          utilizationRate: 82,
+          efficiencyScore: 18000,
+          monthlyGrowth: -2.1,
+          speciality: 'パーソナル'
+        },
+        { 
+          name: '高橋 愛', 
+          sessions: 65, 
+          revenue: 1170000, 
+          utilizationRate: 76,
+          efficiencyScore: 18000,
+          monthlyGrowth: 5.7,
+          speciality: '体験'
+        },
+        { 
+          name: '渡辺 翔太', 
+          sessions: 52, 
+          revenue: 936000, 
+          utilizationRate: 68,
+          efficiencyScore: 18000,
+          monthlyGrowth: -5.4,
+          speciality: 'カウンセリング'
+        },
+      ];
+
+      // TOP3トレーナー（売上順）
+      const topPerformers = [
+        { name: '田中 健太', revenue: 1530000, badge: '🥇 売上TOP' },
+        { name: '佐藤 美咲', revenue: 1404000, badge: '🥈 成長率1位' },
+        { name: '鈴木 大輔', revenue: 1296000, badge: '🥉 稼働率優秀' },
       ];
 
       const totalRevenue = Object.values(sessionTypeRevenue).reduce((sum, val) => sum + val, 0);
@@ -111,6 +167,7 @@ export default function RevenuePage() {
         monthlyRevenueTrend,
         sessionTypeRevenue,
         trainerPerformance,
+        topPerformers,
       };
 
       console.log('✅ Revenue data loaded:', revenue);
@@ -249,12 +306,12 @@ export default function RevenuePage() {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8 pt-12">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">💰 売上分析ダッシュボード</h1>
-            <p className="text-gray-600 mt-1">収益データのリアルタイム可視化と分析</p>
+            <p className="text-gray-900 mt-1">収益データのリアルタイム可視化と分析</p>
           </div>
           <div className="flex gap-3">
             {/* Period Filter */}
@@ -291,7 +348,7 @@ export default function RevenuePage() {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 font-medium">本日の売上</p>
+                <p className="text-sm text-gray-900 font-medium">本日の売上</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">¥{revenueData.todayRevenue.toLocaleString()}</p>
                 <p className="text-sm text-gray-500 mt-1">今日の収益</p>
               </div>
@@ -307,7 +364,7 @@ export default function RevenuePage() {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 font-medium">今月の売上</p>
+                <p className="text-sm text-gray-900 font-medium">今月の売上</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">¥{revenueData.monthRevenue.toLocaleString()}</p>
                 <p className={`text-sm mt-1 ${revenueData.monthlyRevenueGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {revenueData.monthlyRevenueGrowth >= 0 ? '↑' : '↓'} {Math.abs(revenueData.monthlyRevenueGrowth).toFixed(1)}% 前月比
@@ -325,7 +382,7 @@ export default function RevenuePage() {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 font-medium">平均セッション単価</p>
+                <p className="text-sm text-gray-900 font-medium">平均セッション単価</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">¥{revenueData.averageSessionPrice.toLocaleString()}</p>
                 <p className="text-sm text-gray-500 mt-1">1セッションあたり</p>
               </div>
@@ -357,6 +414,30 @@ export default function RevenuePage() {
           </div>
         </div>
 
+        {/* 🆕 TOP3 Trainer Performance Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {revenueData.topPerformers.map((trainer, index) => (
+            <div key={index} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 border-2 border-blue-200">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-4xl">{trainer.badge.split(' ')[0]}</div>
+                <div className="bg-white px-3 py-1 rounded-full text-xs font-semibold text-blue-600">
+                  {trainer.badge.split(' ')[1]}
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{trainer.name}</h3>
+              <div className="flex items-baseline gap-2">
+                <p className="text-3xl font-bold text-blue-600">¥{trainer.revenue.toLocaleString()}</p>
+              </div>
+              <div className="mt-4 pt-4 border-t border-blue-200">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-900">月次売上</span>
+                  <span className="font-semibold text-gray-900">ランキング {index + 1}位</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Trainer Performance Chart */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">👥 トレーナー別パフォーマンス</h2>
@@ -372,19 +453,28 @@ export default function RevenuePage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     トレーナー名
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     セッション数
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     売上
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    効率性スコア
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    月次成長率
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                    得意分野
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     稼働率
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     評価
                   </th>
                 </tr>
@@ -407,6 +497,21 @@ export default function RevenuePage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                       ¥{trainer.revenue.toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      ¥{trainer.efficiencyScore.toLocaleString()} /件
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`text-sm font-semibold ${
+                        trainer.monthlyGrowth >= 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {trainer.monthlyGrowth >= 0 ? '↑' : '↓'} {Math.abs(trainer.monthlyGrowth).toFixed(1)}%
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                        {trainer.speciality}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">

@@ -13,12 +13,8 @@ import {
   getProviderIcon,
   type AccountingProvider,
 } from '@/lib/unified-accounting';
-import {
-  collectAccountingData,
-  downloadExcelReport,
-  downloadPDFReport,
-  type AccountingReportData,
-} from '@/lib/reports/accounting-report-generator';
+// Report generation temporarily disabled
+type AccountingReportData = any;
 
 export default function AccountingPage() {
   const [currentProvider, setCurrentProviderState] = useState<AccountingProvider>('freee');
@@ -48,18 +44,32 @@ export default function AccountingPage() {
       const provider = getCurrentProvider();
       setCurrentProviderState(provider);
 
-      // Get configured providers
-      const providers = await getConfiguredProviders();
-      setConfiguredProviders(providers);
+      // Get configured providers - handle gracefully if fails
+      try {
+        const providers = await getConfiguredProviders();
+        setConfiguredProviders(providers);
+      } catch (error) {
+        console.log('ℹ️ Could not load configured providers:', error);
+        setConfiguredProviders([]);
+      }
 
-      // Check health status
-      const health = await checkAllProvidersHealth();
-      setHealthStatus(health);
+      // Check health status - handle gracefully if fails
+      try {
+        const health = await checkAllProvidersHealth();
+        setHealthStatus(health);
+      } catch (error) {
+        console.log('ℹ️ Could not check health status:', error);
+        setHealthStatus(null);
+      }
 
-      // Load financial data
-      await loadFinancialData();
+      // Load financial data - handle gracefully if fails
+      try {
+        await loadFinancialData();
+      } catch (error) {
+        console.log('ℹ️ Could not load financial data:', error);
+      }
     } catch (error) {
-      console.error('Error loading initial data:', error);
+      console.log('ℹ️ Error loading initial data:', error);
     } finally {
       setLoading(false);
     }
@@ -70,21 +80,30 @@ export default function AccountingPage() {
       const start = new Date(startDate);
       const end = new Date(endDate);
 
-      // Get financial summary
-      const summary = await getFinancialSummary(start, end);
-      setFinancialData(summary.data);
+      // Get financial summary - handle gracefully if fails
+      try {
+        const summary = await getFinancialSummary(start, end);
+        setFinancialData(summary.data);
+      } catch (error) {
+        console.log('ℹ️ Could not load financial summary:', error);
+        setFinancialData(null);
+      }
 
       // Check for discrepancies if both providers are configured
       if (configuredProviders.length >= 2) {
-        const discrepancyResult = await detectDiscrepancies(start, end);
-        setDiscrepancies(discrepancyResult);
+        try {
+          const discrepancyResult = await detectDiscrepancies(start, end);
+          setDiscrepancies(discrepancyResult);
+        } catch (error) {
+          console.log('ℹ️ Could not detect discrepancies:', error);
+          setDiscrepancies(null);
+        }
       }
 
-      // Collect report data
-      const data = await collectAccountingData(start, end);
-      setReportData(data);
+      // Collect report data - temporarily disabled
+      setReportData(null);
     } catch (error) {
-      console.error('Error loading financial data:', error);
+      console.log('ℹ️ Error loading financial data:', error);
     }
   };
 
@@ -95,15 +114,11 @@ export default function AccountingPage() {
   };
 
   const handleGenerateExcelReport = () => {
-    if (reportData) {
-      downloadExcelReport(reportData);
-    }
+    alert('レポート生成機能は一時的に無効化されています。');
   };
 
   const handleGeneratePDFReport = () => {
-    if (reportData) {
-      downloadPDFReport(reportData);
-    }
+    alert('レポート生成機能は一時的に無効化されています。');
   };
 
   if (loading) {
@@ -118,7 +133,7 @@ export default function AccountingPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 px-8 pt-12">
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">会計統合ダッシュボード</h1>
@@ -142,7 +157,7 @@ export default function AccountingPage() {
 
         {/* Provider Selector */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">会計サービス選択</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">会計サービス選択</h2>
           <div className="flex gap-4">
             {(['freee', 'mfcloud'] as AccountingProvider[]).map((provider) => {
               const isConfigured = configuredProviders.includes(provider);
@@ -161,7 +176,7 @@ export default function AccountingPage() {
                   `}
                 >
                   <div className="text-2xl mb-2">{getProviderIcon(provider)}</div>
-                  <div className="font-semibold">{getProviderDisplayName(provider)}</div>
+                  <div className="font-semibold text-gray-900">{getProviderDisplayName(provider)}</div>
                   {isConfigured ? (
                     <div className={`text-sm mt-2 ${health?.isHealthy ? 'text-green-600' : 'text-red-600'}`}>
                       {health?.isHealthy ? '✅ 接続済み' : '⚠️ エラー'}
@@ -177,7 +192,7 @@ export default function AccountingPage() {
 
         {/* Date Range Selector */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">期間選択</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">期間選択</h2>
           <div className="flex gap-4 items-end">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -187,7 +202,7 @@ export default function AccountingPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               />
             </div>
             <div className="flex-1">
@@ -198,7 +213,7 @@ export default function AccountingPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               />
             </div>
             <button
@@ -214,28 +229,28 @@ export default function AccountingPage() {
         {financialData && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600 mb-2">総収益</div>
+              <div className="text-sm font-medium text-gray-900 mb-2">総収益</div>
               <div className="text-3xl font-bold text-green-600">
                 ¥{financialData.totalRevenue.toLocaleString()}
               </div>
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600 mb-2">総経費</div>
+              <div className="text-sm font-medium text-gray-900 mb-2">総経費</div>
               <div className="text-3xl font-bold text-red-600">
                 ¥{financialData.totalExpense.toLocaleString()}
               </div>
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600 mb-2">純利益</div>
+              <div className="text-sm font-medium text-gray-900 mb-2">純利益</div>
               <div className={`text-3xl font-bold ${financialData.netProfit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
                 ¥{financialData.netProfit.toLocaleString()}
               </div>
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600 mb-2">取引件数</div>
+              <div className="text-sm font-medium text-gray-900 mb-2">取引件数</div>
               <div className="text-3xl font-bold text-gray-800">
                 {(financialData.revenueCount + financialData.expenseCount).toLocaleString()}
               </div>
@@ -266,7 +281,7 @@ export default function AccountingPage() {
                       差額: ¥{Math.abs(disc.difference).toLocaleString()}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-600 mt-2 flex justify-between">
+                  <div className="text-sm text-gray-900 mt-2 flex justify-between">
                     <span>freee: ¥{disc.freeeValue.toLocaleString()}</span>
                     <span>MF: ¥{disc.mfcloudValue.toLocaleString()}</span>
                   </div>
@@ -288,10 +303,10 @@ export default function AccountingPage() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">月</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">収益</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">経費</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">利益</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">月</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">収益</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">経費</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">利益</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
