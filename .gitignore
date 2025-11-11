@@ -27,6 +27,8 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
+.env.production
 
 # vercel
 .vercel
@@ -34,3 +36,37 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# セキュリティ: 機密情報
+*.key
+*.pem
+*.cert
+*.crt
+secrets/
+credentials/
+
+# ログファイル
+*.log
+logs/
+server.log
+nextjs.log
+
+# IDEファイル
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS固有
+.DS_Store
+Thumbs.db
+
+# テスト
+coverage/
+.nyc_output/
+
+# バックアップ
+*.backup
+*.bak
+*.tmp

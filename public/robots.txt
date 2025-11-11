@@ -1,0 +1,22 @@
+# GYM MATCH Manager - Robots.txt
+# 管理画面のため、検索エンジンのクロールを制限
+
+User-agent: *
+Disallow: /
+
+# セキュリティ: 管理画面は一切インデックスしない
+Disallow: /dashboard
+Disallow: /members
+Disallow: /bookings
+Disallow: /trainers
+Disallow: /sessions
+Disallow: /analytics
+Disallow: /revenue
+Disallow: /payments
+Disallow: /accounting
+Disallow: /export
+Disallow: /settings
+Disallow: /referrals
+Disallow: /api
+
+# Sitemapは不要 (管理画面のため)
