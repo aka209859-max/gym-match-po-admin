@@ -15,7 +15,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
   useEffect(() => {
     // 認証不要ページ（公開ページ）
-    const publicPages = ['/', '/reset-password', '/register', '/verify-email'];
+    const publicPages = ['/', '/reset-password', '/register', '/verify-email', '/auth/action'];
     if (publicPages.includes(pathname)) {
       return;
     }
@@ -32,7 +32,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   }, [isAuthenticated, isLoading, pathname, router]);
 
   // 認証不要ページは常に表示
-  const publicPages = ['/', '/reset-password', '/register', '/verify-email'];
+  const publicPages = ['/', '/reset-password', '/register', '/verify-email', '/auth/action'];
   if (publicPages.includes(pathname)) {
     return <>{children}</>;
   }
