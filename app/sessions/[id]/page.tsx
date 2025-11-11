@@ -14,12 +14,13 @@ import {
   formatWorkoutTime,
 } from '@/lib/workout-log';
 
-export default function SessionDetailPage({ params }: { params: { id: string } }) {
+export default function SessionDetailPage({ params }: { params: any }) {
   const router = useRouter();
   const { gymId } = useAuth();
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const sessionId = params?.id || '';
 
   // トレーニング記録フォーム状態
   const [exercises, setExercises] = useState<Exercise[]>([
@@ -104,12 +105,12 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
 
   useEffect(() => {
     loadSession();
-  }, [params.id]);
+  }, [sessionId]);
 
   const loadSession = async () => {
     setLoading(true);
     try {
-      const data = await getSessionWorkoutLog(params.id);
+      const data = await getSessionWorkoutLog(sessionId);
       setSession(data);
 
       // 既存の記録がある場合はフォームに反映
@@ -162,7 +163,7 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
     setSaving(true);
     try {
       await addWorkoutLog({
-        sessionId: params.id,
+        sessionId: sessionId,
         exercises: validExercises,
         bodyMetrics: Object.keys(bodyMetrics).length > 0 ? bodyMetrics : undefined,
         trainerNotes,
@@ -194,7 +195,7 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
     if (window.confirm('この記録を会員に共有しますか？')) {
       setSaving(true);
       try {
-        await shareWorkoutLogWithMember(params.id);
+        await shareWorkoutLogWithMember(sessionId);
         alert('✅ 会員に共有しました！');
         await loadSession();
       } catch (error) {
