@@ -1,35 +1,11 @@
+
+> gym-match-po-admin@1.0.0 dev
+> next dev -p 3015
+
    [1m[38;2;173;127;168m▲ Next.js 15.1.6[39m[22m
-   - Local:        http://localhost:3009
-   - Network:      http://169.254.0.21:3009
+   - Local:        http://localhost:3015
+   - Network:      http://169.254.0.21:3015
    - Environments: .env.local
 
  [32m[1m✓[22m[39m Starting...
- [32m[1m✓[22m[39m Ready in 1671ms
- [37m[1m○[22m[39m Compiling / ...
- [32m[1m✓[22m[39m Compiled / in 3s (769 modules)
- GET / [32m200[39m in 3810ms
- [32m[1m✓[22m[39m Compiled in 854ms (320 modules)
- [32m[1m✓[22m[39m Compiled /members in 457ms (768 modules)
- GET /members [32m200[39m in 539ms
- [37m[1m○[22m[39m Compiling /bookings ...
- [32m[1m✓[22m[39m Compiled /bookings in 1059ms (840 modules)
- GET /bookings [32m200[39m in 1156ms
- [32m[1m✓[22m[39m Compiled /payments in 238ms (849 modules)
- GET /payments [32m200[39m in 310ms
- [37m[1m○[22m[39m Compiling /revenue ...
- [32m[1m✓[22m[39m Compiled /revenue in 1113ms (864 modules)
- GET /revenue [32m200[39m in 1176ms
- [37m[1m○[22m[39m Compiling /export ...
- [32m[1m✓[22m[39m Compiled /export in 580ms (879 modules)
- GET /export [32m200[39m in 657ms
- [32m[1m✓[22m[39m Compiled /accounting in 437ms (898 modules)
- GET /accounting [32m200[39m in 485ms
- [32m[1m✓[22m[39m Compiled in 650ms (887 modules)
- [32m[1m✓[22m[39m Compiled in 1290ms (901 modules)
- GET /accounting [32m200[39m in 91ms
- [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload when ch-po-admin/app/accounting/page.tsx","ids":[]} changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET /accounting [32m200[39m in 291ms
- [32m[1m✓[22m[39m Compiled in 599ms (887 modules)
- GET /accounting [32m200[39m in 78ms
- [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
- GET /accounting [32m200[39m in 229ms
+ [32m[1m✓[22m[39m Ready in 1707ms

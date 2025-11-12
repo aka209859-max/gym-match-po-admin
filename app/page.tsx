@@ -48,13 +48,62 @@ export default function LoginPage() {
 
       // Get ID token and custom claims
       const idTokenResult = await user.getIdTokenResult();
-      const customClaims = idTokenResult.claims;
+      let customClaims = idTokenResult.claims;
       
-      console.log('🎫 Custom claims:', customClaims);
+      console.log('🎫 Custom claims (before gym check):', customClaims);
+
+      // Check if user has gymId in custom claims
+      if (!customClaims.gymId) {
+        console.log('🏋️ No gymId found, checking for pending gym creation...');
+        
+        // Check if there's a pending gym name from registration
+        const pendingGymName = localStorage.getItem('pending_gym_name');
+        const pendingUserEmail = localStorage.getItem('pending_user_email');
+        
+        if (pendingGymName && pendingUserEmail === user.email) {
+          console.log('📋 Creating gym for first-time login:', pendingGymName);
+          
+          try {
+            // Call gym creation API
+            const response = await fetch('/api/create-gym', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                uid: user.uid,
+                email: user.email,
+                gymName: pendingGymName,
+              }),
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              console.log('✅ Gym created successfully:', result);
+              
+              // Clear pending data
+              localStorage.removeItem('pending_gym_name');
+              localStorage.removeItem('pending_user_email');
+              
+              // Force token refresh to get updated custom claims
+              await user.getIdToken(true);
+              const updatedTokenResult = await user.getIdTokenResult();
+              customClaims = updatedTokenResult.claims;
+              
+              console.log('🎫 Custom claims (after gym creation):', customClaims);
+            } else {
+              console.error('❌ Gym creation failed:', result.error);
+            }
+          } catch (error) {
+            console.error('❌ Gym creation API error:', error);
+          }
+        } else {
+          console.log('⚠️ No pending gym name found, using defaults');
+        }
+      }
 
       // Extract gymId from custom claims (set by Admin SDK)
-      const gymId = customClaims.gymId as string || 'gym_demo_001';
-      const gymName = customClaims.gymName as string || 'デモジム';
+      const gymId = (customClaims.gymId as string) || 'gym_demo_001';
+      const gymName = (customClaims.gymName as string) || 'デモジム';
 
       // Store authentication in localStorage (for AuthContext compatibility)
       localStorage.setItem('gym_match_authenticated', 'true');
@@ -62,8 +111,8 @@ export default function LoginPage() {
       localStorage.setItem('gym_match_gym_id', gymId);
       localStorage.setItem('gym_match_gym_name', gymName);
 
-      console.log('✅ Login Success - Redirecting to /members');
-      router.replace('/members');
+      console.log('✅ Login Success - Redirecting to /dashboard');
+      router.replace('/dashboard');
       
     } catch (error: any) {
       console.error('❌ Firebase login error:', error);

@@ -42,8 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log('🎫 Custom claims:', customClaims);
 
           // Extract gymId and gymName from custom claims
-          const userGymId = (customClaims.gymId as string) || 'gym_demo_001';
-          const userGymName = (customClaims.gymName as string) || 'デモジム';
+          const userGymId = (customClaims.gymId as string) || null;
+          const userGymName = (customClaims.gymName as string) || null;
 
           // Update state
           setUser(firebaseUser);

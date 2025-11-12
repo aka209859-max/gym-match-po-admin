@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "GYM MATCH PO管理者専用Webアプリ",
   "scripts": {
-    "dev": "next dev -p 3013",
+    "dev": "next dev -p 3015",
     "build": "next build",
-    "start": "next start -p 3013",
+    "start": "next start -p 3015",
     "lint": "next lint"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
     "@types/react-calendar": "^3.9.0",
     "chart.js": "^4.5.1",
     "firebase": "^11.1.0",
+    "firebase-admin": "^13.6.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "next": "15.1.6",

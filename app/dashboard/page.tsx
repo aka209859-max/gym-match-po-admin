@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchKPIData, fetchRecentMembers } from '@/lib/firestore';
+import MemberRegistrationModal from '@/components/MemberRegistrationModal';
+import SessionBookingModal from '@/components/SessionBookingModal';
+import ReportGenerator from '@/components/ReportGenerator';
+import EmailSender from '@/components/EmailSender';
 
 interface KPIData {
   totalMembers: number;
@@ -27,7 +31,14 @@ interface Member {
 }
 
 export default function DashboardPage() {
-  const { isAuthenticated, gymId } = useAuth();
+  const { isAuthenticated, gymId, gymName, user } = useAuth();
+  
+  // Modal states
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  
   const [kpiData, setKpiData] = useState<KPIData>({
     totalMembers: 0,
     activeMembers: 0,
@@ -129,6 +140,36 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900">ダッシュボード</h1>
           <p className="text-gray-900 mt-2">ジム運営の概要とKPI</p>
         </div>
+
+        {/* ジム情報カード（新規追加） */}
+        {gymName && (
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 mb-8 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">{gymName}</h2>
+                  <p className="text-blue-100 text-sm mt-1">
+                    オーナー: {user?.email || 'ユーザー情報なし'}
+                  </p>
+                  <p className="text-blue-100 text-xs mt-1">
+                    ジムID: {gymId || 'ID未設定'}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="bg-white/20 rounded-lg px-4 py-2 backdrop-blur-sm">
+                  <p className="text-xs text-blue-100">現在のプラン</p>
+                  <p className="text-xl font-bold">スタンダード</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* KPIカード（横並び・5列） */}
         <div className="grid grid-cols-5 gap-6 mb-8">
@@ -385,26 +426,38 @@ export default function DashboardPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6">クイックアクション</h2>
             <div className="grid grid-cols-2 gap-4">
-              <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition text-center">
+              <button 
+                onClick={() => setIsMemberModalOpen(true)}
+                className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition text-center"
+              >
                 <svg className="w-8 h-8 text-blue-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 <p className="text-sm font-semibold text-gray-900">新規会員登録</p>
               </button>
-              <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition text-center">
+              <button 
+                onClick={() => setIsSessionModalOpen(true)}
+                className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition text-center"
+              >
                 <svg className="w-8 h-8 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <p className="text-sm font-semibold text-gray-900">セッション予約</p>
               </button>
-              <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition text-center">
+              <button 
+                onClick={() => setIsReportModalOpen(true)}
+                className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition text-center"
+              >
                 <svg className="w-8 h-8 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <p className="text-sm font-semibold text-gray-900">レポート作成</p>
               </button>
-              <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition text-center">
-                <svg className="w-8 h-8 text-indigo-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button 
+                onClick={() => setIsEmailModalOpen(true)}
+                className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition text-center"
+              >
+                <svg className="w-8 h-8 text-orange-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <p className="text-sm font-semibold text-gray-900">メール送信</p>
@@ -413,6 +466,40 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      
+      {/* Modals */}
+      <MemberRegistrationModal 
+        isOpen={isMemberModalOpen}
+        onClose={() => setIsMemberModalOpen(false)}
+        onSuccess={() => {
+          // Refresh members data
+          if (gymId) {
+            fetchRecentMembers(gymId).then(setRecentMembers);
+            fetchKPIData(gymId).then(setKpiData);
+          }
+        }}
+      />
+      
+      <SessionBookingModal 
+        isOpen={isSessionModalOpen}
+        onClose={() => setIsSessionModalOpen(false)}
+        onSuccess={() => {
+          // Refresh KPI data
+          if (gymId) {
+            fetchKPIData(gymId).then(setKpiData);
+          }
+        }}
+      />
+      
+      <ReportGenerator 
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+      />
+      
+      <EmailSender 
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+      />
     </AdminLayout>
   );
 }
