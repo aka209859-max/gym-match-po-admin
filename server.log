@@ -2,10 +2,42 @@
 > gym-match-po-admin@1.0.0 dev
 > next dev -p 3015
 
-   [1m[38;2;173;127;168m▲ Next.js 15.1.6[39m[22m
-   - Local:        http://localhost:3015
-   - Network:      http://169.254.0.21:3015
-   - Environments: .env.local
-
- [32m[1m✓[22m[39m Starting...
- [32m[1m✓[22m[39m Ready in 1707ms
+ [31m[1m⨯[22m[39m Failed to start server
+Error: listen EADDRINUSE: address already in use :::3015
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3015)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: - [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 6.6s (829 modules)
+ [33m[1m⚠[22m[39m Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ [33m[1m⚠[22m[39m Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ HEAD / [32m200[39m in 7431ms
+ [32m[1m✓[22m[39m Compiled in 1025ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 979ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 573ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 642ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 308ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 515ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 355ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 798ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 382ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 371ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 394ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 698ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 452ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 580ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 788ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 507ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 329ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 409ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 403ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 498ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 520ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 450ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 268ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 299ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 392ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 277ms (323 modules)
+ [32m[1m✓[22m[39m Compiled in 299ms (323 modules)

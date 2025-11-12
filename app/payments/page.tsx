@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { getGymPayments, getRevenueSummary, formatAmount, type Payment } from '@/lib/payment';
+import ManualPaymentModal from '@/components/ManualPaymentModal';
+import RefundModal from '@/components/RefundModal';
+import PaymentEditModal from '@/components/PaymentEditModal';
 
 export default function PaymentsPage() {
   const { gymId } = useAuth();
@@ -11,6 +14,12 @@ export default function PaymentsPage() {
   const [summary, setSummary] = useState<any>(null);
   const [filter, setFilter] = useState<string>('all');
   const [loading, setLoading] = useState(false);
+  
+  // Modal states
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
+  const [isManualPaymentModalOpen, setIsManualPaymentModalOpen] = useState(false);
+  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (gymId) {
@@ -55,9 +64,21 @@ export default function PaymentsPage() {
       <div className="max-w-7xl mx-auto px-8 pt-12">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">💳 決済管理</h1>
-          <button onClick={loadData} disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300">
-            {loading ? '読込中...' : '更新'}
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => setIsManualPaymentModalOpen(true)} 
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
+              💵 現金決済記録
+            </button>
+            <button 
+              onClick={loadData} 
+              disabled={loading} 
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300"
+            >
+              {loading ? '読込中...' : '更新'}
+            </button>
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -118,6 +139,7 @@ export default function PaymentsPage() {
                       <th className="text-left py-3 px-4 text-gray-900">金額</th>
                       <th className="text-left py-3 px-4 text-gray-900">ステータス</th>
                       <th className="text-left py-3 px-4 text-gray-900">説明</th>
+                      <th className="text-left py-3 px-4 text-gray-900">操作</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -139,6 +161,31 @@ export default function PaymentsPage() {
                         <td className="py-3 px-4 font-semibold">{formatAmount(payment.amount)}</td>
                         <td className="py-3 px-4">{getStatusBadge(payment.status)}</td>
                         <td className="py-3 px-4 text-sm text-gray-900">{payment.description}</td>
+                        <td className="py-3 px-4">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedPayment(payment);
+                                setIsEditModalOpen(true);
+                              }}
+                              className="px-3 py-1 text-xs text-blue-600 border border-blue-300 rounded hover:bg-blue-50"
+                              disabled={payment.status === 'refunded'}
+                            >
+                              ✏️ 編集
+                            </button>
+                            {payment.status === 'succeeded' && (
+                              <button
+                                onClick={() => {
+                                  setSelectedPayment(payment);
+                                  setIsRefundModalOpen(true);
+                                }}
+                                className="px-3 py-1 text-xs text-orange-600 border border-orange-300 rounded hover:bg-orange-50"
+                              >
+                                🔄 返金
+                              </button>
+                            )}
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -160,6 +207,31 @@ export default function PaymentsPage() {
           </ul>
         </div>
       </div>
+
+      {/* Modals */}
+      <ManualPaymentModal
+        isOpen={isManualPaymentModalOpen}
+        onClose={() => setIsManualPaymentModalOpen(false)}
+        onSuccess={loadData}
+      />
+      
+      {selectedPayment && (
+        <>
+          <PaymentEditModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            payment={selectedPayment}
+            onSuccess={loadData}
+          />
+          
+          <RefundModal
+            isOpen={isRefundModalOpen}
+            onClose={() => setIsRefundModalOpen(false)}
+            payment={selectedPayment}
+            onSuccess={loadData}
+          />
+        </>
+      )}
     </AdminLayout>
   );
 }

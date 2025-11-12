@@ -1,257 +1,281 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Member } from '@/lib/firestore';
+import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  ContractType,
+  MemberStatus,
+  CONTRACT_TYPE_LABELS,
+  MEMBER_STATUS_LABELS,
+  type Member,
+} from '@/types/member';
 
 interface MemberEditModalProps {
-  member: Member | null;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  member: Member;
 }
 
 export default function MemberEditModal({
-  member,
   isOpen,
   onClose,
   onSuccess,
+  member,
 }: MemberEditModalProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    contractType: 'monthly' as 'monthly' | 'session',
-  });
-  const [isSaving, setIsSaving] = useState(false);
+  const { gymId } = useAuth();
+  
+  // Form state - initialize with member data
+  const [name, setName] = useState(member.name);
+  const [email, setEmail] = useState(member.email);
+  const [phone, setPhone] = useState(member.phone);
+  const [contractType, setContractType] = useState<ContractType>(member.contractType);
+  const [status, setStatus] = useState<MemberStatus>(member.status);
+  const [notes, setNotes] = useState(member.notes || '');
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Update form state when member changes
   useEffect(() => {
     if (member) {
-      setFormData({
-        name: member.name,
-        email: member.email || '',
-        phone: member.phone || '',
-        contractType: member.contractType as 'monthly' | 'session',
-      });
+      setName(member.name);
+      setEmail(member.email);
+      setPhone(member.phone);
+      setContractType(member.contractType);
+      setStatus(member.status);
+      setNotes(member.notes || '');
     }
   }, [member]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!member) return;
+    
+    // Validation
+    if (!name.trim()) {
+      setError('会員名を入力してください');
+      return;
+    }
+    if (!email.trim()) {
+      setError('メールアドレスを入力してください');
+      return;
+    }
+    if (!phone.trim()) {
+      setError('電話番号を入力してください');
+      return;
+    }
 
-    setIsSaving(true);
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setError('有効なメールアドレスを入力してください');
+      return;
+    }
+
+    setIsSubmitting(true);
     setError(null);
 
     try {
-      // Firestore更新
-      const memberRef = doc(db, 'users', member.id);
-      await updateDoc(memberRef, {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        contractType: formData.contractType,
-      });
+      // Update member document in Firestore
+      const memberRef = doc(db, 'members', member.id);
+      const updateData = {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        contractType: contractType,
+        status: status,
+        notes: notes.trim() || null,
+        updatedAt: serverTimestamp(),
+      };
+
+      await updateDoc(memberRef, updateData);
 
       console.log('✅ 会員情報更新成功:', member.id);
+      
+      // Success callback
       onSuccess();
       onClose();
-    } catch (err: any) {
+      
+      // Reset form
+      setName('');
+      setEmail('');
+      setPhone('');
+      setContractType('basic');
+      setStatus('active');
+      setNotes('');
+      
+    } catch (err) {
       console.error('❌ 会員情報更新エラー:', err);
-      setError('会員情報の更新に失敗しました');
+      setError('会員情報の更新に失敗しました。もう一度お試しください。');
     } finally {
-      setIsSaving(false);
+      setIsSubmitting(false);
     }
   };
 
-  if (!isOpen || !member) return null;
+  const handleClose = () => {
+    if (!isSubmitting) {
+      setError(null);
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
-    <>
-      {/* モーダル背景 */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity"
-        onClick={onClose}
-      ></div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 rounded-t-xl">
+          <h2 className="text-2xl font-bold text-white">✏️ 会員情報編集</h2>
+          <p className="text-blue-100 text-sm mt-1">会員情報を更新します</p>
+        </div>
 
-      {/* モーダルコンテンツ */}
-      <div className="fixed inset-0 z-50 overflow-y-auto">
-        <div className="flex min-h-full items-center justify-center p-4">
-          <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* ヘッダー */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6 text-white rounded-t-2xl">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">会員情報編集</h2>
-                <button
-                  onClick={onClose}
-                  className="text-white hover:text-gray-200 transition"
-                >
-                  <svg
-                    className="w-8 h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+              <div className="flex items-center">
+                <span className="text-red-800 font-medium">⚠️ {error}</span>
               </div>
             </div>
+          )}
 
-            {/* フォーム */}
-            <form onSubmit={handleSubmit} className="p-8">
-              {error && (
-                <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-700 text-sm">{error}</p>
-                </div>
-              )}
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
+              基本情報
+            </h3>
 
-              <div className="space-y-6">
-                {/* 会員名 */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    会員名 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                    required
-                  />
-                </div>
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                会員名 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例: 山田太郎"
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
 
-                {/* メールアドレス */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    メールアドレス
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  />
-                </div>
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                メールアドレス <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="例: yamada@example.com"
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
 
-                {/* 電話番号 */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    電話番号
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  />
-                </div>
-
-                {/* 契約タイプ */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    契約タイプ <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex space-x-4">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="contractType"
-                        value="monthly"
-                        checked={formData.contractType === 'monthly'}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            contractType: e.target.value as 'monthly' | 'session',
-                          })
-                        }
-                        className="w-4 h-4 text-blue-600"
-                      />
-                      <span className="text-gray-900">月額会員</span>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="contractType"
-                        value="session"
-                        checked={formData.contractType === 'session'}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            contractType: e.target.value as 'monthly' | 'session',
-                          })
-                        }
-                        className="w-4 h-4 text-blue-600"
-                      />
-                      <span className="text-gray-900">セッション会員</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* フッター */}
-              <div className="mt-8 flex items-center justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold"
-                >
-                  キャンセル
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                >
-                  {isSaving ? (
-                    <>
-                      <svg
-                        className="animate-spin h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      <span>保存中...</span>
-                    </>
-                  ) : (
-                    <span>保存</span>
-                  )}
-                </button>
-              </div>
-            </form>
+            {/* Phone */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                電話番号 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="例: 090-1234-5678"
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
           </div>
-        </div>
+
+          {/* Contract & Status */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
+              契約・ステータス
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Contract Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  契約プラン <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={contractType}
+                  onChange={(e) => setContractType(e.target.value as ContractType)}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {Object.entries(CONTRACT_TYPE_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ステータス <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as MemberStatus)}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {Object.entries(MEMBER_STATUS_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              メモ（任意）
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="会員に関する特記事項を記入してください"
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={handleClose}
+              disabled={isSubmitting}
+              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            >
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            >
+              {isSubmitting ? '更新中...' : '✅ 更新する'}
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 }

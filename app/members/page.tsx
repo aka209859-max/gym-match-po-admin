@@ -4,6 +4,9 @@ import { useState, useMemo, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchMembers } from '@/lib/firestore';
+import MemberEditModal from '@/components/MemberEditModal';
+import MemberDetailModal from '@/components/MemberDetailModal';
+import MemberDeleteConfirmation from '@/components/MemberDeleteConfirmation';
 import {
   Member,
   MemberStatus,
@@ -26,6 +29,12 @@ export default function MembersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<MemberStatus | 'all'>('all');
   const [selectedContractType, setSelectedContractType] = useState<ContractType | 'all'>('all');
+  
+  // Modal states
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // ✅ 実データ取得
   useEffect(() => {
@@ -87,6 +96,57 @@ export default function MembersPage() {
       loadMembers();
     }
   }, [isAuthenticated, gymId]);
+
+  // Reload members after CRUD operations
+  const reloadMembers = async () => {
+    if (isAuthenticated && gymId) {
+      try {
+        setIsLoading(true);
+        const membersData = await fetchMembers(gymId);
+        const uiMembers: Member[] = membersData.map(m => {
+          const contractType = (['premium', 'standard', 'basic', 'trial'].includes(m.contractType)) 
+            ? m.contractType as ContractType 
+            : 'basic' as ContractType;
+          const status = m.isActive ? 'active' as MemberStatus : 'inactive' as MemberStatus;
+          return {
+            id: m.id,
+            name: m.name,
+            email: m.email,
+            phone: m.phone,
+            status: status,
+            contractType: contractType,
+            joinDate: m.joinDate,
+            lastVisit: m.lastVisit || m.joinDate,
+            totalSessions: m.totalSessions || 0,
+            totalRevenue: 0,
+            createdAt: m.joinDate,
+            updatedAt: new Date(),
+          };
+        });
+        setMembers(uiMembers);
+      } catch (error) {
+        console.error('❌ 会員データ再取得エラー:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  // Modal handlers
+  const handleViewDetail = (member: Member) => {
+    setSelectedMember(member);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleEdit = (member: Member) => {
+    setSelectedMember(member);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = (member: Member) => {
+    setSelectedMember(member);
+    setIsDeleteModalOpen(true);
+  };
 
   // Filter members based on criteria
   const filteredMembers = useMemo(() => {
@@ -310,18 +370,63 @@ export default function MembersPage() {
           ) : (
             <div className="divide-y divide-gray-200">
               {filteredMembers.map((member) => (
-                <MemberRow key={member.id} member={member} />
+                <MemberRow 
+                  key={member.id} 
+                  member={member}
+                  onViewDetail={handleViewDetail}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Modals */}
+      {selectedMember && (
+        <>
+          <MemberDetailModal
+            isOpen={isDetailModalOpen}
+            onClose={() => setIsDetailModalOpen(false)}
+            member={selectedMember}
+            onEdit={() => {
+              setIsDetailModalOpen(false);
+              setIsEditModalOpen(true);
+            }}
+          />
+          
+          <MemberEditModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            member={selectedMember}
+            onSuccess={reloadMembers}
+          />
+          
+          <MemberDeleteConfirmation
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            member={selectedMember}
+            onSuccess={reloadMembers}
+          />
+        </>
+      )}
     </AdminLayout>
   );
 }
 
 // Member Row Component
-function MemberRow({ member }: { member: Member }) {
+function MemberRow({ 
+  member,
+  onViewDetail,
+  onEdit,
+  onDelete,
+}: { 
+  member: Member;
+  onViewDetail: (member: Member) => void;
+  onEdit: (member: Member) => void;
+  onDelete: (member: Member) => void;
+}) {
   // 安全なカラー取得（デフォルト値付き）
   const statusColor = MEMBER_STATUS_COLORS[member.status] || { 
     bg: 'bg-gray-100', 
@@ -408,11 +513,23 @@ function MemberRow({ member }: { member: Member }) {
 
         {/* Right: Actions */}
         <div className="ml-4 flex flex-col gap-2">
-          <button className="px-4 py-2 text-sm text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
-            詳細
+          <button 
+            onClick={() => onViewDetail(member)}
+            className="px-4 py-2 text-sm text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors"
+          >
+            📊 詳細
           </button>
-          <button className="px-4 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-            編集
+          <button 
+            onClick={() => onEdit(member)}
+            className="px-4 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            ✏️ 編集
+          </button>
+          <button 
+            onClick={() => onDelete(member)}
+            className="px-4 py-2 text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+          >
+            🗑️ 削除
           </button>
         </div>
       </div>
